@@ -7,7 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body>{children}</body>
+      <body className="bg-slate-900 text-slate-50">{children}</body>
     </html>
   );
 }

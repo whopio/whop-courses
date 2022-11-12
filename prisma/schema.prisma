@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String                  @id
+  whopAccessToken    String
+  whopRefreshToken   String
+  whopTokenExpiry    DateTime
+  username           String
+  email              String                  @unique
+  profilePicUrl      String
+  companies          CompanyUser[]
+  lessonInteractions UserLessonInteraction[]
+}
+
+model Company {
+  id      String        @id
+  route   String        @unique
+  users   CompanyUser[]
+  courses Course[]
+}
+
+model CompanyUser {
+  id        String  @id @default(uuid())
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@unique([companyId, userId])
+}
+
+model Course {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  coverImage  String
+  company     Company   @relation(fields: [companyId], references: [id])
+  companyId   String
+  chapters    Chapter[]
+}
+
+enum ChapterStatus {
+  VISIBLE
+  HIDDEN
+}
+
+model Chapter {
+  id              String        @id @default(uuid())
+  title           String
+  description     String
+  status          ChapterStatus
+  course          Course        @relation(fields: [courseId], references: [id])
+  courseId        String
+  parentChapterId String?
+  parentChapter   Chapter?      @relation("chapter_chapter", fields: [parentChapterId], references: [id])
+  children        Chapter[]     @relation("chapter_chapter")
+  lessons         Lesson[]
+}
+
+model Lesson {
+  id               String                  @id @default(uuid())
+  title            String
+  description      String
+  richContent      String
+  mainVideo        String
+  images           String[]
+  files            String[]
+  chapter          Chapter                 @relation(fields: [chapterId], references: [id])
+  chapterId        String
+  userInteractions UserLessonInteraction[]
+}
+
+enum UserLessonStatus {
+  COMPLETED
+  IN_PROGRESS
+  NOT_STARTED
+}
+
+model UserLessonInteraction {
+  id       String           @id @default(uuid())
+  user     User             @relation(fields: [userId], references: [id])
+  userId   String
+  lesson   Lesson           @relation(fields: [lessonId], references: [id])
+  lessonId String
+  status   UserLessonStatus
+  liked    Boolean
+}

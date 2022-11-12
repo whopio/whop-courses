@@ -15,6 +15,13 @@ export type AccessTokenResponse = {
   created_at: number;
 };
 
+export type CompanyResponse = {
+  id: string;
+  title: string;
+  image_url: string;
+  hostname: string;
+};
+
 export async function codeToAccessToken(
   code: string
 ): Promise<AccessTokenResponse> {
@@ -43,4 +50,15 @@ export async function getMe(accessToken: string): Promise<MeResponse> {
   }).then((r) => r.json());
   if (me.error) throw Error("Failed fetch me");
   return me;
+}
+
+export async function getCompany(id: string): Promise<CompanyResponse> {
+  const company = await fetch(`${process.env.WHOP_API_URL}/v2/company`, {
+    headers: {
+      "Whop-Company": id,
+      authorization: `Bearer ${process.env.WHOP_API_KEY}`,
+    },
+  }).then((r) => r.json());
+  if (company.error) throw Error("Failed fetch company");
+  return company;
 }

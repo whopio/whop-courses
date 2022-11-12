@@ -6,10 +6,13 @@
     "dev": "PORT=4300 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db-up": "docker run -d --rm --name whop-courses-db -p 4302:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=whop-courses postgres:14; sleep 1; yarn prisma db push;",
+    "db-down": "docker kill whop-courses-db"
   },
   "dependencies": {
     "@peculiar/webcrypto": "^1.4.1",
+    "@prisma/client": "4.6.1",
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.8",
@@ -30,6 +33,7 @@
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.19",
     "prettier": "^2.7.1",
+    "prisma": "^4.6.1",
     "tailwindcss": "^3.2.4"
   }
 }

@@ -1,24 +1,9 @@
-import { RequestCookie } from "next/dist/server/web/spec-extension/cookies";
 import { NextRequest, NextResponse } from "next/server";
-import { UserSession } from "./lib/api/session";
-import { unsealData } from "./lib/api/token";
-
-async function getUser(cookie?: RequestCookie) {
-  if (!cookie) return null;
-  try {
-    const user = await unsealData<UserSession>(cookie.value);
-    return user;
-  } catch (error) {
-    return null;
-  }
-}
+import { getSessionFromCookie } from "./lib/api/session";
 
 export async function middleware(req: NextRequest) {
-  const user = await getUser(req.cookies.get("c_token"));
+  const user = await getSessionFromCookie(req.cookies.get("c_token"));
   const company = req.nextUrl.pathname.split("/")[1];
-
-  console.log("User:", user);
-  console.log("Company:", company);
 
   if (!company || !company.startsWith("biz_")) {
     const url = req.nextUrl.clone();
