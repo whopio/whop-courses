@@ -5,6 +5,16 @@ type RequestContext = {
   user: UserSession | null;
 };
 
+export type ApiResponse<T> =
+  | {
+      status: "success";
+      data: T;
+    }
+  | {
+      status: "error";
+      message: string;
+    };
+
 type NextFunction = (data: RequestContext) => Promise<any>;
 export type MiddlewareFunction = (
   req: NextApiRequest,

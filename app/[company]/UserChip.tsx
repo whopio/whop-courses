@@ -1,9 +1,28 @@
-"use-client";
+"use client";
+
+import Image from "next/image";
+import { useUser } from "../../lib/context/UserContext";
 
 export function UserChip() {
-  return (
-    <div className="bg-slate-800 rounded-xl px-4 py-2 flex flex-row flex-nowrap items-center gap-4 hover:bg-slate-700 transition-all">
-      Username
+  const { user, loading } = useUser();
+  return loading ? (
+    <div className="flex gap-3 items-center">
+      <div className="h-6 w-24 animate-pulse bg-slate-700 rounded-md" />
+      <div className="h-10 w-10 animate-pulse bg-slate-700 rounded-full" />
     </div>
+  ) : user ? (
+    <div className="flex gap-3 items-center">
+      <span className="italic text-slate-400">Welcome back</span>
+      <span className="font-semibold">{user.username}</span>
+      <Image
+        alt="Your profile picture"
+        src={user.profilePicUrl}
+        width={40}
+        height={40}
+        className="rounded-full"
+      />
+    </div>
+  ) : (
+    <div></div>
   );
 }

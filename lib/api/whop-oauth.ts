@@ -1,4 +1,4 @@
-export type MeResponse = {
+export type WhopMeResponse = {
   id: string;
   username: string;
   email: string;
@@ -6,7 +6,7 @@ export type MeResponse = {
   social_accounts: { service: string; username: string; id: number }[];
 };
 
-export type AccessTokenResponse = {
+export type WhopAccessTokenResponse = {
   access_token: string;
   token_type: string;
   expires_in: number;
@@ -15,7 +15,7 @@ export type AccessTokenResponse = {
   created_at: number;
 };
 
-export type CompanyResponse = {
+export type WhopCompanyResponse = {
   id: string;
   title: string;
   image_url: string;
@@ -24,7 +24,7 @@ export type CompanyResponse = {
 
 export async function codeToAccessToken(
   code: string
-): Promise<AccessTokenResponse> {
+): Promise<WhopAccessTokenResponse> {
   const data = await fetch(`${process.env.WHOP_API_URL}/v3/oauth/token`, {
     method: "POST",
     headers: {
@@ -42,7 +42,7 @@ export async function codeToAccessToken(
   return data;
 }
 
-export async function getMe(accessToken: string): Promise<MeResponse> {
+export async function getMe(accessToken: string): Promise<WhopMeResponse> {
   const me = await fetch(`${process.env.WHOP_API_URL}/v2/me`, {
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -52,7 +52,7 @@ export async function getMe(accessToken: string): Promise<MeResponse> {
   return me;
 }
 
-export async function getCompany(id: string): Promise<CompanyResponse> {
+export async function getCompany(id: string): Promise<WhopCompanyResponse> {
   const company = await fetch(`${process.env.WHOP_API_URL}/v2/company`, {
     headers: {
       "Whop-Company": id,

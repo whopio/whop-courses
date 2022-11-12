@@ -14,7 +14,7 @@ export function parseUserSession(session: any) {
 export const requireAuth: MiddlewareFunction = async (req, res, ctx, next) => {
   const user =
     ctx.user ||
-    (await parseTokenCookie<UserSession>(req.headers.cookie, "token"));
+    (await parseTokenCookie<UserSession>(req.headers.cookie, "c_token"));
 
   if (!user) {
     throw Error("Not authenticated");
@@ -26,7 +26,7 @@ export const requireAuth: MiddlewareFunction = async (req, res, ctx, next) => {
 export const withUser: MiddlewareFunction = async (req, res, ctx, next) => {
   const user =
     ctx.user ||
-    (await parseTokenCookie<UserSession>(req.headers.cookie, "token"));
+    (await parseTokenCookie<UserSession>(req.headers.cookie, "c_token"));
 
   return next({ ...ctx, user });
 };
