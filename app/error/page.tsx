@@ -1,4 +1,4 @@
-import { PageProps } from "@/lib/api/util";
+import { PageProps } from "@/lib/util";
 
 const message: Record<string, string> = {
   noCompany: "No company found",

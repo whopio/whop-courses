@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "db-up": "docker run -d --rm --name whop-courses-db -p 4302:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=whop-courses postgres:14; sleep 1; yarn prisma db push;",
-    "db-down": "docker kill whop-courses-db"
+    "db-down": "docker kill whop-courses-db",
+    "dbm": "python3 scripts/db-management/main.py"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.4",
+    "@headlessui/tailwindcss": "^0.1.1",
     "@peculiar/webcrypto": "^1.4.1",
     "@prisma/client": "4.6.1",
     "@types/node": "18.11.9",

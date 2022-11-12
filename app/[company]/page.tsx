@@ -1,4 +1,4 @@
-import { PageProps } from "@/lib/api/util";
+import { PageProps } from "@/lib/util";
 
 export default async function CompanyPage({}: PageProps) {
   return (

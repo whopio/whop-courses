@@ -2,12 +2,9 @@ import { ReactNode } from "react";
 
 export const fetcher = (...args: any[]) =>
   // @ts-ignore
-  fetch(...args).then((res) => {
+  fetch(...args).then(async (res) => {
     if (res.ok) {
-      return res.json().then((data) => {
-        console.log("fetched:", data);
-        return data;
-      });
+      return res.json();
     }
     throw new Error(res.statusText);
   });

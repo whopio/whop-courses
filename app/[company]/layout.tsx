@@ -1,6 +1,6 @@
-import { LayoutProps } from "@/lib/api/util";
 import { getCompany } from "@/lib/api/whop-oauth";
 import { AppProviders } from "@/lib/context/Providers";
+import { LayoutProps } from "@/lib/util";
 import Image from "next/image";
 import Link from "next/link";
 import { UserChip } from "./UserChip";
