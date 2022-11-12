@@ -12,6 +12,9 @@
     "dbm": "python3 scripts/db-management/main.py"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.4",
     "@headlessui/tailwindcss": "^0.1.1",
     "@peculiar/webcrypto": "^1.4.1",
