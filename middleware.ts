@@ -3,9 +3,9 @@ import { getSessionFromCookie } from "./lib/api/session";
 
 export async function middleware(req: NextRequest) {
   const user = await getSessionFromCookie(req.cookies.get("c_token"));
-  const company = req.nextUrl.pathname.split("/")[1];
+  const companyRoute = req.nextUrl.pathname.split("/")[1];
 
-  if (!company || !company.startsWith("biz_")) {
+  if (!companyRoute) {
     const url = req.nextUrl.clone();
     url.searchParams.set("type", "noCompany");
     url.pathname = "/error";
@@ -13,9 +13,11 @@ export async function middleware(req: NextRequest) {
   }
 
   if (!user) {
-    return NextResponse.redirect(
-      `https://whop.com/oauth?client_id=${process.env.WHOP_CLIENT_ID}&redirect_uri=${process.env.WHOP_REDIRECT_URI}&scope=${company}`
-    );
+    const url = req.nextUrl.clone();
+    url.searchParams.set("route", companyRoute);
+    url.searchParams.set("from", req.nextUrl.pathname);
+    url.pathname = "/api/auth/login";
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();

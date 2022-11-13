@@ -16,8 +16,8 @@ model User {
   whopRefreshToken   String
   whopTokenExpiry    DateTime
   username           String
-  email              String                  @unique
-  profilePicUrl      String
+  email              String?                 @unique
+  profilePicUrl      String?
   companies          CompanyUser[]
   lessonInteractions UserLessonInteraction[]
 }

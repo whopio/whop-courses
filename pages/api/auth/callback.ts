@@ -3,13 +3,18 @@ import { db } from "@/lib/db";
 import invariant from "tiny-invariant";
 import { handler } from "../../../lib/api/handler";
 import { UserSession } from "../../../lib/api/session";
-import { codeToAccessToken, getMe } from "../../../lib/api/whop-oauth";
+import {
+  codeToAccessToken,
+  getCompany,
+  getMe,
+} from "../../../lib/api/whop-oauth";
 
 export default handler(async (req, res) => {
   const { code } = req.query;
   invariant(typeof code === "string", "Invalid code");
   const tokens = await codeToAccessToken(code);
   const me = await getMe(tokens.access_token);
+  const company = await getCompany(tokens.scope);
 
   const user = await db.user.upsert({
     where: { id: me.id },
@@ -27,17 +32,17 @@ export default handler(async (req, res) => {
         connectOrCreate: {
           where: {
             companyId_userId: {
-              companyId: tokens.scope,
+              companyId: company.id,
               userId: me.id,
             },
           },
           create: {
             company: {
               connectOrCreate: {
-                where: { id: tokens.scope },
+                where: { id: company.id },
                 create: {
-                  id: tokens.scope,
-                  route: tokens.scope,
+                  id: company.id,
+                  route: company.route,
                 },
               },
             },
@@ -70,5 +75,5 @@ export default handler(async (req, res) => {
 
   res.setHeader("Set-Cookie", cookie);
 
-  res.redirect(`/${tokens.scope}`);
+  res.redirect(`/${company.route}`);
 });

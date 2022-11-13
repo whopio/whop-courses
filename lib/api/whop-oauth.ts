@@ -1,7 +1,7 @@
 export type WhopMeResponse = {
   id: string;
   username: string;
-  email: string;
+  email: string | null;
   profile_pic_url: string;
   social_accounts: { service: string; username: string; id: number }[];
 };
@@ -20,6 +20,17 @@ export type WhopCompanyResponse = {
   title: string;
   image_url: string;
   hostname: string;
+  route: string;
+};
+
+export type WhopCompanyByRouteResponse = {
+  title: string;
+  route: string;
+  tag: string;
+  image_url: string;
+  header_image_url: string;
+  description: string;
+  shortened_description: string;
 };
 
 export async function codeToAccessToken(
@@ -59,6 +70,21 @@ export async function getCompany(id: string): Promise<WhopCompanyResponse> {
       authorization: `Bearer ${process.env.WHOP_API_KEY}`,
     },
   }).then((r) => r.json());
+  if (company.error) throw Error("Failed fetch company");
+  return company;
+}
+
+export async function getCompanyByRoute(
+  route: string
+): Promise<WhopCompanyByRouteResponse> {
+  const company = await fetch(
+    `${process.env.WHOP_API_URL}/v3/companies/${route}`
+  ).then((r) => {
+    if (r.ok) {
+      return r.json();
+    }
+    throw Error(r.statusText);
+  });
   if (company.error) throw Error("Failed fetch company");
   return company;
 }
