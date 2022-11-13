@@ -3,21 +3,13 @@ import { getSessionFromCookie } from "./lib/api/session";
 
 export async function middleware(req: NextRequest) {
   const user = await getSessionFromCookie(req.cookies.get("c_token"));
-  const companyRoute = req.nextUrl.pathname.split("/")[1];
-
-  if (!companyRoute) {
-    const url = req.nextUrl.clone();
-    url.searchParams.set("type", "noCompany");
-    url.pathname = "/error";
-    return NextResponse.redirect(url);
-  }
 
   if (!user) {
+    const from = encodeURIComponent(req.nextUrl.pathname);
     const url = req.nextUrl.clone();
-    url.searchParams.set("route", companyRoute);
-    url.searchParams.set("from", req.nextUrl.pathname);
-    url.pathname = "/api/auth/login";
-    return NextResponse.redirect(url);
+    url.pathname = "/login";
+    url.searchParams.set("from", from);
+    return NextResponse.rewrite(url);
   }
 
   return NextResponse.next();

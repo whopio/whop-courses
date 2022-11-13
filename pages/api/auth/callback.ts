@@ -1,20 +1,16 @@
 import { createTokenCookie } from "@/lib/api/cookie";
+import { getMe } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import invariant from "tiny-invariant";
 import { handler } from "../../../lib/api/handler";
 import { UserSession } from "../../../lib/api/session";
-import {
-  codeToAccessToken,
-  getCompany,
-  getMe,
-} from "../../../lib/api/whop-oauth";
+import { codeToAccessToken } from "../../../lib/api/whop-oauth";
 
 export default handler(async (req, res) => {
-  const { code } = req.query;
+  const { code, state } = req.query;
   invariant(typeof code === "string", "Invalid code");
   const tokens = await codeToAccessToken(code);
   const me = await getMe(tokens.access_token);
-  const company = await getCompany(tokens.scope);
 
   const user = await db.user.upsert({
     where: { id: me.id },
@@ -28,27 +24,6 @@ export default handler(async (req, res) => {
       whopTokenExpiry: new Date(
         tokens.expires_in * 1000 + new Date().getTime()
       ),
-      companies: {
-        connectOrCreate: {
-          where: {
-            companyId_userId: {
-              companyId: company.id,
-              userId: me.id,
-            },
-          },
-          create: {
-            company: {
-              connectOrCreate: {
-                where: { id: company.id },
-                create: {
-                  id: company.id,
-                  route: company.route,
-                },
-              },
-            },
-          },
-        },
-      },
     },
     update: {
       email: me.email,
@@ -75,5 +50,5 @@ export default handler(async (req, res) => {
 
   res.setHeader("Set-Cookie", cookie);
 
-  res.redirect(`/${company.route}`);
+  res.redirect(typeof state === "string" ? decodeURIComponent(state) : "/");
 });

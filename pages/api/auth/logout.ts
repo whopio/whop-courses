@@ -4,5 +4,4 @@ import { handler } from "@/lib/api/handler";
 export default handler(async (req, res) => {
   res.setHeader("set-cookie", clearCookie("c_token"));
   res.redirect("/");
-  console.log("logout");
 });
