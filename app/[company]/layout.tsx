@@ -1,11 +1,11 @@
-import { getCompanyByRoute } from "@/lib/api/whop-api";
+import { getCompany } from "@/lib/server/get-company";
 import { LayoutProps } from "@/lib/util";
 import Image from "next/image";
 import Link from "next/link";
 import { UserChip } from "./UserChip";
 
 export default async function CompanyLayout({ children, params }: LayoutProps) {
-  const company = await getCompanyByRoute(params!.company);
+  const company = await getCompany(params!.company);
   return (
     <>
       <nav className="py-3 px-6 border-b-2 border-b-slate-800 flex flex-row flex-nowrap justify-between items-center">
@@ -23,13 +23,10 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
             </h1>
           </Link>
         </div>
+        {/* @ts-expect-error Server Component */}
         <UserChip />
       </nav>
       <div className="p-4 max-w-6xl mx-auto">{children}</div>
     </>
   );
 }
-
-export const dynamic = "force-static",
-  dynamicParams = true,
-  revalidate = 300;

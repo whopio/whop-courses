@@ -1,28 +1,27 @@
-"use client";
-
-import { Menu } from "@/ui/Menu";
+import { getUser } from "@/lib/server/get-user";
+import { faPerson } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import { useUser } from "../../lib/context/UserContext";
 
-export function UserChip() {
-  const { user, loadingInitial } = useUser();
-  return loadingInitial ? (
-    <div className="flex gap-3 items-center">
-      <div className="h-6 w-24 animate-pulse bg-slate-700 rounded-md" />
-      <div className="h-10 w-10 animate-pulse bg-slate-700 rounded-full" />
-    </div>
-  ) : user ? (
+export async function UserChip() {
+  const user = await getUser();
+  if (!user) throw Error;
+  return (
     <div className="flex gap-3 items-center bg-emerald-500/25 rounded-full pl-4">
       <span className="font-semibold">{user.username}</span>
-      <Image
-        alt="Your profile picture"
-        src={user.profilePicUrl}
-        width={40}
-        height={40}
-        className="rounded-full"
-      />
+      {user.profilePicUrl ? (
+        <Image
+          alt="Your profile picture"
+          src={user.profilePicUrl}
+          width={40}
+          height={40}
+          className="rounded-full"
+        />
+      ) : (
+        <div className="rounded-full w-10 h-10 bg-emerald-500/50 flex items-center justify-center text-white">
+          <FontAwesomeIcon icon={faPerson} />
+        </div>
+      )}
     </div>
-  ) : (
-    <Menu />
   );
 }

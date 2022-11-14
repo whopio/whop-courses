@@ -1,23 +1,16 @@
-"use client";
-
-import { useCompanies } from "@/lib/hooks/use-companies";
+import { getUserCompanies } from "@/lib/api/whop-api";
+import { getUser } from "@/lib/server/get-user";
 import { faArrowCircleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function MyCompaniesList() {
-  const companies = useCompanies();
+export default async function MyCompaniesList() {
+  const user = await getUser();
+  const companies = await getUserCompanies(user.whopAccessToken);
   return (
     <div className="flex flex-col gap-4 w-full">
-      {companies.loading && (
-        <>
-          <CompanySelectorSkeleton />
-          <CompanySelectorSkeleton />
-          <CompanySelectorSkeleton />
-        </>
-      )}
-      {companies.data?.map((company) => (
+      {companies.map((company) => (
         <Link href={`/${company.route}`} key={company.id}>
           <div className="p-4 border-2 border-slate-800 hover:border-emerald-500 transition-all rounded-lg flex gap-4 items-center group">
             <Image
