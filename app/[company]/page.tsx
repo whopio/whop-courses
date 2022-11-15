@@ -5,7 +5,7 @@ import { faRocket } from "@fortawesome/free-solid-svg-icons";
 
 export default async function CompanyPage({}: PageProps) {
   return (
-    <div className="p-4 border-2 border-slate-200 rounded-lg flex flex-col gap-4">
+    <div className="p-8 flex flex-col gap-4 flex-1">
       <h1 className="text-2xl text-center font-bold">Components</h1>
 
       <div className="flex gap-2">

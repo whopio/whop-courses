@@ -20,6 +20,11 @@ type ContextBuilderFunction<T> = (
   req: NextApiRequest,
   res: NextApiResponse
 ) => T | Promise<T>;
+type ContextExtendorFunction<T, R> = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  ctx: T
+) => R | Promise<R>;
 
 export class API<T> extends Function {
   private _handlers: Partial<Record<RequestMethod, HandlerFunction<T>>> = {};
@@ -53,6 +58,13 @@ export class API<T> extends Function {
   delete(handler: HandlerFunction<T>) {
     this._handlers.DELETE = handler;
     return this;
+  }
+
+  extend<R>(contextBuilder: ContextExtendorFunction<T, R>) {
+    return new API<R>(async (req, res) => {
+      const context = await this._contextBuilder(req, res);
+      return contextBuilder(req, res, context);
+    });
   }
 
   async _call(req: NextApiRequest, res: NextApiResponse) {

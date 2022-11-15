@@ -57,9 +57,10 @@ model Chapter {
 model Lesson {
   id               String                  @id @default(uuid())
   title            String
-  description      String
-  richContent      String
-  mainVideo        String
+  description      String?
+  richContent      String?
+  mainVideoId      String?
+  mainVideo        MuxVideo?               @relation(fields: [mainVideoId], references: [id])
   images           String[]
   files            String[]
   chapter          Chapter                 @relation(fields: [chapterId], references: [id])
@@ -81,4 +82,11 @@ model UserLessonInteraction {
   lessonId String
   status   UserLessonStatus
   liked    Boolean
+}
+
+model MuxVideo {
+  id      String   @id @default(uuid())
+  lessons Lesson[]
+  status  String
+  url     String
 }
