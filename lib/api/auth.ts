@@ -1,5 +1,5 @@
+import { API } from "./api";
 import { parseTokenCookie } from "./cookie";
-import { MiddlewareFunction } from "./handler";
 import { UserSession, UserSessionSchema } from "./session";
 
 export function parseUserSession(session: any) {
@@ -11,22 +11,23 @@ export function parseUserSession(session: any) {
   }
 }
 
-export const requireAuth: MiddlewareFunction = async (req, res, ctx, next) => {
-  const user =
-    ctx.user ||
-    (await parseTokenCookie<UserSession>(req.headers.cookie, "c_token"));
-
-  if (!user) {
-    throw Error("Not authenticated");
+export const AuthedAPI = new API((req, res) => {
+  const token = parseTokenCookie<UserSession>(req.headers.cookie, "c_token");
+  if (!token) {
+    res.status(401);
+    throw Error("Not authenticated and authentication is required");
   }
+  const session = parseUserSession(token);
+  if (!session) {
+    res.status(401);
+    throw Error("Not authenticated and authentication is required");
+  }
+  return session;
+});
 
-  return next({ ...ctx, user });
-};
-
-export const withUser: MiddlewareFunction = async (req, res, ctx, next) => {
-  const user =
-    ctx.user ||
-    (await parseTokenCookie<UserSession>(req.headers.cookie, "c_token"));
-
-  return next({ ...ctx, user });
-};
+export const OptionalAuthedAPI = new API((req, res) => {
+  const token = parseTokenCookie<UserSession>(req.headers.cookie, "c_token");
+  if (!token) return null;
+  const session = parseUserSession(token);
+  return session;
+});

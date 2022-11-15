@@ -12,7 +12,7 @@ export default async function MyCompaniesList() {
     <div className="flex flex-col gap-4 w-full">
       {companies.map((company) => (
         <Link href={`/${company.route}`} key={company.id}>
-          <div className="p-4 border-2 border-slate-800 hover:border-emerald-500 transition-all rounded-lg flex gap-4 items-center group">
+          <div className="p-4 bg-slate-200 hover:shadow-lg hover:bg-emerald-200 transition-all rounded-lg flex gap-4 items-center group">
             <Image
               src={company.image_url}
               alt="Company Image Title"
@@ -24,7 +24,7 @@ export default async function MyCompaniesList() {
             <FontAwesomeIcon
               icon={faArrowCircleRight}
               size="2x"
-              className="text-slate-300 group-hover:text-emerald-500 transition-all"
+              className="text-slate-400 group-hover:text-emerald-500 transition-all"
             />
           </div>
         </Link>

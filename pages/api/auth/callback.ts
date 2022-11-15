@@ -1,12 +1,12 @@
+import { BaseAPI } from "@/lib/api/api";
 import { createTokenCookie } from "@/lib/api/cookie";
 import { getMe } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import invariant from "tiny-invariant";
-import { handler } from "../../../lib/api/handler";
 import { UserSession } from "../../../lib/api/session";
 import { codeToAccessToken } from "../../../lib/api/whop-oauth";
 
-export default handler(async (req, res) => {
+export default BaseAPI.get(async (req, res) => {
   const { code, state } = req.query;
   invariant(typeof code === "string", "Invalid code");
   const tokens = await codeToAccessToken(code);

@@ -3,14 +3,17 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
 config.autoAddCss = false;
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { LayoutProps } from "@/lib/util";
+import { Open_Sans } from "@next/font/google";
+
+const font = Open_Sans({});
+
+export default function RootLayout({ children }: LayoutProps) {
   return (
     <html>
-      <body className="bg-slate-900 text-slate-50">{children}</body>
+      <body className={`bg-slate-50 text-black ${font.className}`}>
+        {children}
+      </body>
     </html>
   );
 }
