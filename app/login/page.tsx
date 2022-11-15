@@ -8,7 +8,7 @@ export default function LoginPage({ searchParams }: PageProps) {
     <div className="flex items-center justify-center h-screen">
       <div className="flex flex-col gap-4 p-4 bg-white rounded-lg shadow max-w-md w-full items-center">
         <h1 className="text-2xl font-semibold">Please Login To Continue</h1>
-        <Button variant={"green"} fullWidth href={redirectUrl}>
+        <Button variant="light" color="success" fullWidth href={redirectUrl}>
           Login with Whop
         </Button>
       </div>

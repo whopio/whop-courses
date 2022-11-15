@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -5,7 +7,13 @@ module.exports = {
     "./ui/**/*.{ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: colors.blue,
+        accent: colors.yellow,
+        neutral: colors.slate,
+      }
+    },
   },
   plugins: [
     require('@headlessui/tailwindcss')

@@ -30,7 +30,8 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
           <UserChip />
           <IconButton
             href="/api/auth/logout"
-            variant="red"
+            variant="light"
+            color="danger"
             icon={faArrowRightFromBracket}
           />
         </div>
