@@ -9,7 +9,3 @@ export default function Home() {
     </div>
   );
 }
-
-export const dynamic = "force-static",
-  dynamicParams = true,
-  revalidate = 300;

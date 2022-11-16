@@ -1,123 +1,76 @@
+import { getCompany } from "@/lib/server/get-company";
 import { PageProps } from "@/lib/util";
-import { Button } from "@/ui/Button";
-import { IconButton } from "@/ui/IconButton";
-import { faRocket } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
+import { FC } from "react";
 
-export default async function CompanyPage({}: PageProps) {
+export default async function CompanyPage({ params }: PageProps) {
+  const company = await getCompany(params!.company);
   return (
-    <div className="p-8 flex flex-col gap-4 flex-1">
-      <h1 className="text-2xl text-center font-bold">Components</h1>
-
-      <div className="flex gap-2">
-        <IconButton icon={faRocket} size="xs" />
-        <IconButton icon={faRocket} size="sm" />
-        <IconButton icon={faRocket} />
-        <IconButton icon={faRocket} size="lg" />
-        <IconButton icon={faRocket} size="xl" />
+    <div className="p-8 flex flex-col gap-6 m-auto max-w-7xl">
+      <Image
+        className="rounded-lg w-full max-h-80 object-cover"
+        src={company.header_image_url}
+        alt="Company Header Image"
+        width={1280}
+        height={384}
+      />
+      <h1 className="text-3xl font-bold">Welcome to {company.title}</h1>
+      <p className="text-neutral-800">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut quam
+        ultrices, rutrum elit et, vestibulum quam. Nulla eget lobortis nisi.
+        Aliquam a mattis odio, a tincidunt magna, proin quis vestibulum purus,
+        sed porttitor nulla. Duis eget magna at risus vestibulum pellentesque
+        habitant morbi tristique senectus et netus et malesuada fames ac turpis
+        egestas. Integer convallis eu metus in pretium. Pellentesque posuere
+        ullamcorper mi, ac ullamcorper justo dictum et.
+      </p>
+      <h3 className="text-xl font-bold">Your on-going courses</h3>
+      <div className="flex flex-wrap gap-4">
+        <CourseCard
+          image={
+            "https://images.unsplash.com/photo-1666624481302-3a9920b039b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDR8NnNNVmpUTFNrZVF8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
+          }
+          title={"Lorem ipsum dolor sit amet"}
+          subtitle={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+        />
+        <CourseCard
+          image={
+            "https://images.unsplash.com/photo-1666797630713-f5a2e54d3d23?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDZ8NnNNVmpUTFNrZVF8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
+          }
+          title={"Lorem ipsum dolor sit amet"}
+          subtitle={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+        />
       </div>
-      <div className="flex gap-2">
-        <IconButton variant="light" color="danger" icon={faRocket} />
-        <IconButton variant="filled" color="danger" icon={faRocket} />
-        <IconButton variant="outline" color="danger" icon={faRocket} />
-      </div>
-      <div className="flex gap-2">
-        <IconButton variant="light" color="success" icon={faRocket} />
-        <IconButton variant="filled" color="success" icon={faRocket} />
-        <IconButton variant="outline" color="success" icon={faRocket} />
-      </div>
-      <div className="flex gap-2">
-        <IconButton variant="light" color="primary" icon={faRocket} />
-        <IconButton variant="filled" color="primary" icon={faRocket} />
-        <IconButton variant="outline" color="primary" icon={faRocket} />
-      </div>
-      <div className="flex gap-2">
-        <IconButton variant="light" color="accent" icon={faRocket} />
-        <IconButton variant="filled" color="accent" icon={faRocket} />
-        <IconButton variant="outline" color="accent" icon={faRocket} />
-      </div>
-      <div className="flex gap-2">
-        <IconButton variant="light" color="neutral" icon={faRocket} />
-        <IconButton variant="filled" color="neutral" icon={faRocket} />
-        <IconButton variant="outline" color="neutral" icon={faRocket} />
-      </div>
-
-      <div className="flex gap-2">
-        <Button iconLeft={faRocket} size="xs">
-          Button XS
-        </Button>
-        <Button iconLeft={faRocket} size="sm">
-          Button SM
-        </Button>
-        <Button iconLeft={faRocket} size="md">
-          Button MD
-        </Button>
-        <Button iconLeft={faRocket} size="lg">
-          Button LG
-        </Button>
-        <Button iconLeft={faRocket} size="xl">
-          Button XL
-        </Button>
-      </div>
-
-      <div className="flex gap-2">
-        <Button variant="light" color="danger" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="filled" color="danger" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="outline" color="danger" iconLeft={faRocket}>
-          Button
-        </Button>
-      </div>
-      <div className="flex gap-2">
-        <Button variant="light" color="success" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="filled" color="success" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="outline" color="success" iconLeft={faRocket}>
-          Button
-        </Button>
-      </div>
-      <div className="flex gap-2">
-        <Button variant="light" color="primary" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="filled" color="primary" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="outline" color="primary" iconLeft={faRocket}>
-          Button
-        </Button>
-      </div>
-      <div className="flex gap-2">
-        <Button variant="light" color="accent" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="filled" color="accent" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="outline" color="accent" iconLeft={faRocket}>
-          Button
-        </Button>
-      </div>
-      <div className="flex gap-2">
-        <Button variant="light" color="neutral" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="filled" color="neutral" iconLeft={faRocket}>
-          Button
-        </Button>
-        <Button variant="outline" color="neutral" iconLeft={faRocket}>
-          Button
-        </Button>
-      </div>
+      <h3 className="text-xl font-bold">Other Courses</h3>
+      <CourseCard
+        image={
+          "https://images.unsplash.com/photo-1656498933204-93bbef61edeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDE1fDZzTVZqVExTa2VRfHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
+        }
+        title={"Lorem ipsum dolor sit amet"}
+        subtitle={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+      />
     </div>
   );
 }
 
-export const dynamic = "force-static",
-  dynamicParams = true,
-  revalidate = 300;
+const CourseCard: FC<{ image: string; title: string; subtitle: string }> = ({
+  image,
+  title,
+  subtitle,
+}) => {
+  return (
+    <div className="w-80 flex flex-col gap-2 transition rounded-lg  group cursor-pointer">
+      <Image
+        width={320}
+        height={180}
+        src={image}
+        alt="Course Image"
+        className="rounded-lg aspect-video object-cover group-hover:shadow-lg group-hover:scale-105 transition"
+      />
+      <h4 className="font-bold text-lg  group-hover:underline">{title}</h4>
+      <span className="text-neutral-600 overflow-hidden text-ellipsis group-hover:underline">
+        {subtitle}
+      </span>
+    </div>
+  );
+};

@@ -25,7 +25,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
 
   return (
     <div className="flex h-screen flex-nowrap items-stretch justify-start">
-      <nav className="bg-neutral-900 flex flex-col gap-8 p-4 items-stretch w-80">
+      <nav className="bg-neutral-900 flex flex-col gap-8 p-4 items-stretch w-80 shrink-0 overflow-auto">
         <div className="group flex flex-row flex-nowrap items-center gap-2 bg-black rounded-lg p-3">
           <Image
             src={company.image_url}
@@ -100,7 +100,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
           Back to Whop
         </Button>
       </nav>
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 overflow-auto">{children}</div>
     </div>
   );
 }
