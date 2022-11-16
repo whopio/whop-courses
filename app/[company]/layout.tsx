@@ -16,12 +16,13 @@ import Link from "next/link";
 
 export default async function CompanyLayout({ children, params }: LayoutProps) {
   const company = await getCompany(params!.company);
+  // Todo, figure out if the current user has access to these courses
+  const user = await getUser();
   const courses = await db.course.findMany({
     where: {
       companyId: company.tag,
     },
   });
-  const user = await getUser();
 
   return (
     <div className="flex h-screen flex-nowrap items-stretch justify-start">
@@ -74,36 +75,16 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
           />
         </div>
         <div className="flex-1 flex flex-col gap-2">
-          <Link
-            href={`/${params!.company}/${"course-0"}`}
-            className=" bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex items-center text-slate-50 transition"
-          >
-            <FontAwesomeIcon icon={faLockOpen} className="w-10" />
-            <span>Course 1</span>
-          </Link>
-
-          <Link
-            href={`/${params!.company}/${"course-1"}`}
-            className="hover:bg-slate-800 p-4 rounded-lg flex items-center text-slate-400 transition"
-          >
-            <FontAwesomeIcon icon={faLockOpen} className="w-10" />
-            <span>Course 2</span>
-          </Link>
-          <Link
-            href={`/${params!.company}/${"course-2"}`}
-            className=" bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex items-center text-slate-50 transition"
-          >
-            <FontAwesomeIcon icon={faLockOpen} className="w-10" />
-            <span>Course 3</span>
-          </Link>
-
-          <Link
-            href={`/${params!.company}/${"course-3"}`}
-            className="hover:bg-slate-800 p-4 rounded-lg flex items-center text-slate-400 transition"
-          >
-            <FontAwesomeIcon icon={faLockOpen} className="w-10" />
-            <span>Course 4</span>
-          </Link>
+          {courses.map((course) => (
+            <Link
+              key={course.id}
+              href={`/${params!.company}/${course.id}`}
+              className=" bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex items-center text-slate-50 transition"
+            >
+              <FontAwesomeIcon icon={faLockOpen} className="w-10" />
+              <span>{course.title}</span>
+            </Link>
+          ))}
         </div>
         <Button
           fullWidth

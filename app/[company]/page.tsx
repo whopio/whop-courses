@@ -1,4 +1,6 @@
+import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
+import { getUser } from "@/lib/server/get-user";
 import { PageProps } from "@/lib/util";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,6 +8,36 @@ import { FC } from "react";
 
 export default async function CompanyPage({ params }: PageProps) {
   const company = await getCompany(params!.company);
+  const user = await getUser();
+  const courses = await db.course.findMany({
+    where: {
+      companyId: company.tag,
+    },
+    include: {
+      chapters: {
+        include: {
+          lessons: {
+            where: {
+              userInteractions: {
+                some: {
+                  status: "COMPLETED",
+                  userId: user.id,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const startedCourses = courses.filter((course) =>
+    course.chapters.some((chapter) => chapter.lessons.length > 0)
+  );
+  const notStartedCourses = courses.filter(
+    (course) => !course.chapters.some((chapter) => chapter.lessons.length > 0)
+  );
+
   return (
     <div className="p-8 flex flex-col gap-6 m-auto max-w-7xl">
       <Image
@@ -17,46 +49,39 @@ export default async function CompanyPage({ params }: PageProps) {
       />
       <h1 className="text-3xl font-bold">Welcome to {company.title}</h1>
       <p className="text-neutral-800">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut quam
-        ultrices, rutrum elit et, vestibulum quam. Nulla eget lobortis nisi.
-        Aliquam a mattis odio, a tincidunt magna, proin quis vestibulum purus,
-        sed porttitor nulla. Duis eget magna at risus vestibulum pellentesque
-        habitant morbi tristique senectus et netus et malesuada fames ac turpis
-        egestas. Integer convallis eu metus in pretium. Pellentesque posuere
-        ullamcorper mi, ac ullamcorper justo dictum et.
+        {company.description || company.shortened_description}
       </p>
-      <h3 className="text-xl font-bold">Your on-going courses</h3>
+      {startedCourses.length > 0 && (
+        <>
+          <h3 className="text-xl font-bold">Your on-going courses</h3>
+          <div className="flex flex-wrap gap-4">
+            {startedCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                companyId={company.route}
+                courseId={course.id}
+                image={course.coverImage}
+                title={course.title}
+                subtitle={"Todo, workout text"}
+              />
+            ))}
+          </div>
+        </>
+      )}
+      <h3 className="text-xl font-bold">
+        {startedCourses.length > 0 ? "Other Courses" : "Courses"}
+      </h3>
       <div className="flex flex-wrap gap-4">
-        <CourseCard
-          companyId={company.route}
-          courseId="course-0"
-          image={
-            "https://images.unsplash.com/photo-1666624481302-3a9920b039b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDR8NnNNVmpUTFNrZVF8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
-          }
-          title={"Lorem ipsum dolor sit amet"}
-          subtitle={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-        />
-        <CourseCard
-          companyId={company.route}
-          courseId="course-1"
-          image={
-            "https://images.unsplash.com/photo-1666797630713-f5a2e54d3d23?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDZ8NnNNVmpUTFNrZVF8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
-          }
-          title={"Lorem ipsum dolor sit amet"}
-          subtitle={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-        />
-      </div>
-      <h3 className="text-xl font-bold">Other Courses</h3>
-      <div className="flex flex-wrap gap-4">
-        <CourseCard
-          companyId={company.route}
-          courseId="course-2"
-          image={
-            "https://images.unsplash.com/photo-1656498933204-93bbef61edeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDE1fDZzTVZqVExTa2VRfHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-          }
-          title={"Lorem ipsum dolor sit amet"}
-          subtitle={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-        />
+        {notStartedCourses.map((course) => (
+          <CourseCard
+            key={course.id}
+            companyId={company.route}
+            courseId={course.id}
+            image={course.coverImage}
+            title={course.title}
+            subtitle={"xxx Minutes"}
+          />
+        ))}
       </div>
     </div>
   );

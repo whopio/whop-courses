@@ -1,3 +1,5 @@
+import { getCourse } from "@/lib/server/get-course";
+import { getUser } from "@/lib/server/get-user";
 import { LayoutProps } from "@/lib/util";
 import {
   faCircleCheck,
@@ -11,11 +13,16 @@ import Link from "next/link";
 export default async function Layout({ children, params }: LayoutProps) {
   const courseId = params?.course;
   const companyId = params?.company;
+  const user = await getUser();
+  const course = await getCourse(courseId!, user.id);
+
   return (
     <div className="flex h-screen items-stretch flex-nowrap">
       <div className="bg-slate-100 h-full overflow-auto w-96 p-2 flex flex-col items-stretch gap-8 shrink-0">
         <Link href={`/${companyId}/${courseId}`}>
-          <h1 className="font-bold text-2xl m-2 hover:underline">{courseId}</h1>
+          <h1 className="font-bold text-2xl m-2 hover:underline">
+            {course.title}
+          </h1>
         </Link>
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between p-2">

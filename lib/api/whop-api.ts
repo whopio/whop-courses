@@ -17,10 +17,12 @@ export type WhopApiOptions = {
 export async function whopApi<T = any>(opts: WhopApiOptions) {
   const headers: any = {};
   headers["Accept"] = "application/json";
-  if (opts.whopCompany) headers["Whop-Company"];
+  if (opts.whopCompany) headers["Whop-Company"] = opts.whopCompany;
   if (opts.apiKey)
     headers["Authorization"] = `Bearer ${process.env.WHOP_API_KEY}`;
   if (opts.accessToken) headers["Authorization"] = `Bearer ${opts.accessToken}`;
+
+  console.log(headers);
 
   const res = await fetch(`${process.env.WHOP_API_URL}${opts.path}`, {
     body: opts.body ? JSON.stringify(opts.body) : undefined,

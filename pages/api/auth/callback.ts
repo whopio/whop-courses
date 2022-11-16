@@ -1,12 +1,12 @@
-import { BaseAPI } from "@/lib/api/api";
+import { API } from "@/lib/api/api";
 import { createTokenCookie } from "@/lib/api/cookie";
-import { getMe } from "@/lib/api/whop-api";
+import { getMe, getUserCompanies } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import invariant from "tiny-invariant";
 import { UserSession } from "../../../lib/api/session";
 import { codeToAccessToken } from "../../../lib/api/whop-oauth";
 
-export default BaseAPI.get(async (req, res) => {
+export default API.noContext().get(async (req, res) => {
   const { code, state } = req.query;
   invariant(typeof code === "string", "Invalid code");
   const tokens = await codeToAccessToken(code);
@@ -35,6 +35,23 @@ export default BaseAPI.get(async (req, res) => {
         tokens.expires_in * 1000 + new Date().getTime()
       ),
     },
+  });
+
+  const userCompanies = await getUserCompanies(tokens.access_token);
+  const existingCompanies = await db.company.findMany({
+    where: {
+      id: {
+        in: userCompanies.map((c) => c.id),
+      },
+    },
+  });
+  const newCompanies = userCompanies.filter(
+    (c) => !existingCompanies.find((ec) => ec.id === c.id)
+  );
+  await db.company.createMany({
+    data: newCompanies.map((c) => ({
+      id: c.id,
+    })),
   });
 
   const session: UserSession = {

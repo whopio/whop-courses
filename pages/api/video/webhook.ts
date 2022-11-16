@@ -1,5 +1,5 @@
-import { BaseAPI } from "@/lib/api/api";
+import { API } from "@/lib/api/api";
 
-export default BaseAPI.get(async (req, res, ctx) => {
+export default API.noContext().get(async (req, res, ctx) => {
   return null;
 });
