@@ -32,7 +32,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
             alt="Company Image Title"
             width={32}
             height={32}
-            className="rounded"
+            className="rounded-full"
           />
           <Link className="flex-1" href={`/${company.route}`}>
             <h1 className="font-semibold text-md text-white group-hover:text-slate-300 transition-all select-none cursor-pointer">
@@ -75,19 +75,34 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
         </div>
         <div className="flex-1 flex flex-col gap-2">
           <Link
-            href={`/${params!.company}/${"Genin Intro 101"}`}
+            href={`/${params!.company}/${"course-0"}`}
             className=" bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex items-center text-slate-50 transition"
           >
             <FontAwesomeIcon icon={faLockOpen} className="w-10" />
-            <span>Genin Intro 101</span>
+            <span>Course 1</span>
           </Link>
 
           <Link
-            href={`/${params!.company}/${"Chunnin Techniques"}`}
+            href={`/${params!.company}/${"course-1"}`}
             className="hover:bg-slate-800 p-4 rounded-lg flex items-center text-slate-400 transition"
           >
             <FontAwesomeIcon icon={faLockOpen} className="w-10" />
-            <span>Chunnin Techniques</span>
+            <span>Course 2</span>
+          </Link>
+          <Link
+            href={`/${params!.company}/${"course-2"}`}
+            className=" bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex items-center text-slate-50 transition"
+          >
+            <FontAwesomeIcon icon={faLockOpen} className="w-10" />
+            <span>Course 3</span>
+          </Link>
+
+          <Link
+            href={`/${params!.company}/${"course-3"}`}
+            className="hover:bg-slate-800 p-4 rounded-lg flex items-center text-slate-400 transition"
+          >
+            <FontAwesomeIcon icon={faLockOpen} className="w-10" />
+            <span>Course 4</span>
           </Link>
         </div>
         <Button
