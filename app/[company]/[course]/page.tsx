@@ -1,6 +1,6 @@
 import { getCourse } from "@/lib/server/get-course";
 import { getUser } from "@/lib/server/get-user";
-import { PageProps } from "@/lib/util";
+import { blurDataURL, PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
 import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,6 +15,8 @@ export default async function CourseIndexPage({ params }: PageProps) {
     <div className="p-8 flex flex-col gap-6 h-screen m-auto max-w-6xl">
       <div className="flex flex-col gap-6 flex-1 overflow-auto">
         <Image
+          placeholder="blur"
+          blurDataURL={blurDataURL}
           className="rounded-lg w-full max-h-80 object-cover"
           src={course.coverImage}
           alt="Course Header Image"

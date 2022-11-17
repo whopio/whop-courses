@@ -1,8 +1,8 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cva, VariantProps } from "class-variance-authority";
-import Link from "next/link";
-import { ButtonHTMLAttributes, DetailedHTMLProps, FC } from "react";
+import Link, { LinkProps } from "next/link";
+import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
 type HtmlButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -100,16 +100,24 @@ export const buttonCompoundVariants: {
   },
 ];
 
-type ButtonProps = {
+type ButtonBaseProps = {
   children: string;
   iconLeft?: IconProp;
   iconRight?: IconProp;
   extraClasses?: string;
-  href?: string;
 } & VariantProps<typeof button>;
 
+type ButtonProps = ButtonBaseProps &
+  (
+    | ({ link?: false } & Omit<
+        HtmlButtonProps,
+        keyof ButtonBaseProps | "className"
+      >)
+    | ({ link: true } & Omit<LinkProps, keyof ButtonBaseProps | "className">)
+  );
+
 const button = cva(
-  "flex flex-nowrap items-center justify-center rounded-lg transition-all font-semibold hover:shadow-lg gap-2 self-start",
+  "flex flex-nowrap items-center justify-center rounded-lg transition-all font-semibold hover:shadow-lg gap-2 self-start active:scale-105 active:-rotate-1",
   {
     variants: {
       variant: {
@@ -144,20 +152,18 @@ const button = cva(
   }
 );
 
-export const Button: FC<
-  ButtonProps & Omit<HtmlButtonProps, keyof ButtonProps | "className">
-> = ({
-  children,
-  iconLeft,
-  iconRight,
-  fullWidth,
-  variant,
-  color,
-  size,
-  extraClasses,
-  href,
-  ...rest
-}) => {
+export function Button(props: ButtonProps) {
+  const {
+    variant,
+    color,
+    size,
+    fullWidth,
+    extraClasses,
+    children,
+    iconLeft,
+    iconRight,
+    ...rest
+  } = props;
   const c = button({
     variant: variant,
     color: color,
@@ -172,16 +178,17 @@ export const Button: FC<
       {iconRight && <FontAwesomeIcon icon={iconRight} />}
     </>
   );
-  if (href) {
+  if (rest.link === true) {
     return (
-      <Link href={href} className={c}>
+      <Link className={c} {...rest}>
         {kids}
       </Link>
     );
+  } else {
+    return (
+      <button className={c} {...rest}>
+        {kids}
+      </button>
+    );
   }
-  return (
-    <button className={c} {...rest}>
-      {kids}
-    </button>
-  );
-};
+}

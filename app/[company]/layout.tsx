@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
 import { getUser } from "@/lib/server/get-user";
-import { LayoutProps } from "@/lib/util";
+import { blurDataURL, LayoutProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
 import { IconButton } from "@/ui/IconButton";
 import {
@@ -29,6 +29,8 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
       <nav className="bg-neutral-900 flex flex-col gap-8 p-4 items-stretch w-80 shrink-0 overflow-auto">
         <div className="group flex flex-row flex-nowrap items-center gap-2 bg-black rounded-lg p-3">
           <Image
+            placeholder="blur"
+            blurDataURL={blurDataURL}
             src={company.image_url}
             alt="Company Image Title"
             width={32}
@@ -48,6 +50,8 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
         <div className="flex gap-2 items-center">
           {user.profilePicUrl ? (
             <Image
+              placeholder="blur"
+              blurDataURL={blurDataURL}
               alt="Your profile picture"
               src={user.profilePicUrl}
               width={48}
@@ -67,6 +71,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
           </div>
 
           <IconButton
+            link
             href="/api/auth/logout"
             variant="outline"
             color="danger"
@@ -79,7 +84,12 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
             <Link
               key={course.id}
               href={`/${params!.company}/${course.id}`}
-              className=" bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex items-center text-slate-50 transition"
+              className={
+                "  p-4 rounded-lg flex items-center text-slate-50 transition" +
+                (course.id === params!.course
+                  ? " bg-slate-800 hover:bg-slate-700"
+                  : " hover:bg-slate-800")
+              }
             >
               <FontAwesomeIcon icon={faLockOpen} className="w-10" />
               <span>{course.title}</span>
@@ -87,6 +97,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
           ))}
         </div>
         <Button
+          link
           fullWidth
           variant="filled"
           color="neutral"

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
 import { getUser } from "@/lib/server/get-user";
-import { PageProps } from "@/lib/util";
+import { blurDataURL, PageProps } from "@/lib/util";
 import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
@@ -41,6 +41,8 @@ export default async function CompanyPage({ params }: PageProps) {
   return (
     <div className="p-8 flex flex-col gap-6 m-auto max-w-7xl">
       <Image
+        placeholder="blur"
+        blurDataURL={blurDataURL}
         className="rounded-lg w-full max-h-80 object-cover"
         src={company.header_image_url}
         alt="Company Header Image"
@@ -98,11 +100,13 @@ const CourseCard: FC<{
     <Link href={`/${companyId}/${courseId}`}>
       <div className="w-80 flex flex-col gap-2 transition rounded-lg  group cursor-pointer">
         <Image
+          placeholder="blur"
+          blurDataURL={blurDataURL}
           width={320}
           height={180}
           src={image}
           alt="Course Image"
-          className="rounded-lg aspect-video object-cover group-hover:shadow-lg group-hover:scale-105 transition"
+          className="rounded-lg aspect-video object-cover group-hover:shadow-xl group-hover:scale-105 group-hover:-rotate-1 transition"
         />
         <h4 className="font-bold text-lg  group-hover:underline">{title}</h4>
         <span className="text-neutral-600 overflow-hidden text-ellipsis group-hover:underline">

@@ -1,5 +1,5 @@
 import { API } from "@/lib/api/api";
-import { companyContext, userContext } from "@/lib/api/context-functions";
+import { companyAdminUserContext } from "@/lib/api/context-functions";
 import { db } from "@/lib/db";
 import z from "zod";
 
@@ -11,7 +11,7 @@ const CreateCourseSchema = z.object({
 
 export type TCreateCourseData = z.infer<typeof CreateCourseSchema>;
 
-export default API.withContext(userContext.add(companyContext)).postSafe(
+export default API.withContext(companyAdminUserContext).postSafe(
   CreateCourseSchema,
   async (data, ctx) => {
     console.log("create post", data, ctx);

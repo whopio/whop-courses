@@ -6,7 +6,7 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    domains: ['assets.whop.com', 'cdn.discordapp.com', 'images.unsplash.com']
+    domains: ['assets.whop.com', 'cdn.discordapp.com', 'images.unsplash.com', 'imagedelivery.net']
   }
 }
 

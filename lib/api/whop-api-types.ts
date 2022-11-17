@@ -33,10 +33,4 @@ export type WhopCompanyByRouteResponse = {
   shortened_description: string;
 };
 
-export type WhopUserCompanies = {
-  id: string;
-  title: string;
-  route: string;
-  image_url: string;
-  hostname: string;
-}[];
+export type WhopUserCompanies = WhopCompanyResponse[];

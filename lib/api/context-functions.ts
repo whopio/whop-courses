@@ -10,7 +10,6 @@ export const companyContext = API.contextFunction(async (req, res) => {
   const route = req.query.company;
   invariant(typeof route === "string", "Invalid company route");
   const company = await getCompany(route);
-  console.log(route, company);
   return { company };
 });
 
@@ -50,5 +49,19 @@ export const userContext = sessionContext.add(
       where: { id: ctx.session.userId },
     });
     return { user };
+  })
+);
+
+export const companyAdminUserContext = userContext.add(companyContext).add(
+  API.contextFunction(async (req, res, ctx) => {
+    // TODO wite this
+    const isCompanyAdmin = true;
+
+    if (!isCompanyAdmin) {
+      res.status(403);
+      throw Error("Not authorized");
+    }
+
+    return {};
   })
 );

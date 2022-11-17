@@ -1,8 +1,7 @@
 import { API } from "@/lib/api/api";
 import {
-  companyContext,
+  companyAdminUserContext,
   courseContext,
-  userContext,
 } from "@/lib/api/context-functions";
 import { db } from "@/lib/db";
 import z from "zod";
@@ -17,9 +16,7 @@ const EditCourseSchema = z
 
 export type TEditCourseData = z.infer<typeof EditCourseSchema>;
 
-export default API.withContext(
-  userContext.add(companyContext).add(courseContext)
-)
+export default API.withContext(companyAdminUserContext.add(courseContext))
   .postSafe(EditCourseSchema, async (data, ctx) => {
     return await db.course.update({
       where: {

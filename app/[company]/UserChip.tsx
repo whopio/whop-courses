@@ -1,4 +1,5 @@
 import { getUser } from "@/lib/server/get-user";
+import { blurDataURL } from "@/lib/util";
 import { faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -11,6 +12,8 @@ export async function UserChip() {
       <span className="font-semibold">{user.username}</span>
       {user.profilePicUrl ? (
         <Image
+          placeholder="blur"
+          blurDataURL={blurDataURL}
           alt="Your profile picture"
           src={user.profilePicUrl}
           width={40}

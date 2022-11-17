@@ -1,7 +1,7 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cva, VariantProps } from "class-variance-authority";
-import Link from "next/link";
+import Link, { LinkProps } from "next/link";
 import { ButtonHTMLAttributes, DetailedHTMLProps, FC } from "react";
 import { buttonCompoundVariants } from "./Button";
 
@@ -43,25 +43,41 @@ type HtmlButtonProps = DetailedHTMLProps<
   HTMLButtonElement
 >;
 
-type IconButtonProps = {
+type BaseIconButtonProps = {
   icon: IconProp;
   extraClasses?: string;
-  href?: string;
 } & VariantProps<typeof iconButton>;
 
-export const IconButton: FC<
-  IconButtonProps & Omit<HtmlButtonProps, keyof IconButtonProps>
-> = ({ icon, variant, href, extraClasses, size, color, ...rest }) => {
+type IconButtonProps = BaseIconButtonProps &
+  (
+    | ({ link?: false } & Omit<
+        HtmlButtonProps,
+        keyof BaseIconButtonProps | "className"
+      >)
+    | ({ link: true } & Omit<
+        LinkProps,
+        keyof BaseIconButtonProps | "className"
+      >)
+  );
+
+export const IconButton: FC<IconButtonProps> = ({
+  icon,
+  variant,
+  extraClasses,
+  size,
+  color,
+  ...rest
+}) => {
   const c = iconButton({ variant, size, color, class: extraClasses });
-  if (href) {
+  if (rest.link) {
     return (
-      <Link href={href} className={c}>
+      <Link {...rest} className={c}>
         <FontAwesomeIcon icon={icon} />
       </Link>
     );
   }
   return (
-    <button className={c} {...rest}>
+    <button {...rest} className={c}>
       <FontAwesomeIcon icon={icon} />
     </button>
   );

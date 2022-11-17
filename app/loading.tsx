@@ -44,6 +44,7 @@ export default function CompanyLoading() {
           fullWidth
           variant="filled"
           color="neutral"
+          link
           href="https://whop.com"
           iconLeft={faArrowRightFromBracket}
         >

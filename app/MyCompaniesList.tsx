@@ -1,5 +1,6 @@
 import { getUserCompanies } from "@/lib/api/whop-api";
 import { getUser } from "@/lib/server/get-user";
+import { blurDataURL } from "@/lib/util";
 import { faArrowCircleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -14,6 +15,8 @@ export default async function MyCompaniesList() {
         <Link href={`/${company.route}`} key={company.id}>
           <div className="p-4 bg-slate-200 hover:shadow-lg hover:bg-emerald-200 transition-all rounded-lg flex gap-4 items-center group">
             <Image
+              placeholder="blur"
+              blurDataURL={blurDataURL}
               src={company.image_url}
               alt="Company Image Title"
               width={40}
