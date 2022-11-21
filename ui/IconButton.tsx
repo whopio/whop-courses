@@ -70,14 +70,16 @@ export const IconButton: FC<IconButtonProps> = ({
 }) => {
   const c = iconButton({ variant, size, color, class: extraClasses });
   if (rest.link) {
+    const { link, ...rest2 } = rest;
     return (
-      <Link {...rest} className={c}>
+      <Link {...rest2} className={c}>
         <FontAwesomeIcon icon={icon} />
       </Link>
     );
   }
+  const { link, ...rest2 } = rest;
   return (
-    <button {...rest} className={c}>
+    <button {...rest2} className={c}>
       <FontAwesomeIcon icon={icon} />
     </button>
   );

@@ -2,10 +2,11 @@ import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
 import { blurDataURL, PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
-import { faCircleCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
+import { CreateCourseButton } from "./CreateCourseButton";
 
 export default async function AdminHome({ params, searchParams }: PageProps) {
   const company = await getCompany(params!.company);
@@ -30,9 +31,10 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
             Draft
           </Button>
         </div>
-        <Button color="accent" variant="filled" iconLeft={faPlus}>
-          New
-        </Button>
+        <CreateCourseButton
+          companyId={company.tag}
+          companyRoute={company.route}
+        />
       </div>
       <table className="border-collapse">
         <thead>

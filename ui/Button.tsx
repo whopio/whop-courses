@@ -189,14 +189,16 @@ export function Button(props: ButtonProps) {
     </>
   );
   if (rest.link === true) {
+    const { link, ...rest2 } = rest;
     return (
-      <Link className={c} {...rest}>
+      <Link className={c} {...rest2}>
         {kids}
       </Link>
     );
   } else {
+    const { link, ...rest2 } = rest;
     return (
-      <button className={c} disabled={disabled} {...rest}>
+      <button className={c} disabled={disabled} {...rest2}>
         {kids}
       </button>
     );
