@@ -4,7 +4,6 @@ import { LayoutProps } from "@/lib/util";
 import {
   faCircleCheck,
   faCirclePlay,
-  faSpinner,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,67 +23,41 @@ export default async function Layout({ children, params }: LayoutProps) {
             {course.title}
           </h1>
         </Link>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center justify-between p-2">
-            <span className="font-semibold text-lg">Chapter 1</span>
-            <span className="text-slate-500">25 Minutes</span>
+        {course.chapters.map((chapter) => (
+          <div key={chapter.id} className="flex flex-col gap-1">
+            <div className="flex items-center justify-between p-2">
+              <span className="font-semibold text-lg">{chapter.title}</span>
+              <span className="text-slate-500">XX Minutes</span>
+            </div>
+            {chapter.lessons.map((lesson) => (
+              <Link
+                key={lesson.id}
+                href={`/${companyId}/${courseId}/${lesson.id}`}
+              >
+                <div className="p-2 transition hover:bg-slate-200 rounded-lg cursor-pointer flex items-start text-slate-600 justify-between gap-2">
+                  {lesson.userInteractions[0]?.status === "COMPLETED" ? (
+                    <FontAwesomeIcon
+                      icon={faCircleCheck}
+                      className="text-emerald-500 my-1"
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faCirclePlay}
+                      className="text-slate-500 my-1"
+                    />
+                  )}
+                  <span className="flex-1">{lesson.title}</span>
+                  {lesson.userInteractions[0]?.liked && (
+                    <FontAwesomeIcon
+                      icon={faStar}
+                      className="text-amber-500 my-1"
+                    />
+                  )}
+                </div>
+              </Link>
+            ))}
           </div>
-          <Link href={`/${companyId}/${courseId}/lesson-1`}>
-            <div className="p-2 transition hover:bg-slate-200 rounded-lg cursor-pointer flex items-start text-slate-600 justify-between gap-2">
-              <FontAwesomeIcon
-                icon={faCircleCheck}
-                className="text-emerald-500 my-1"
-              />
-              <span className="flex-1">Sed ut sollicitudin nisl</span>
-              <FontAwesomeIcon icon={faStar} className="text-amber-500 my-1" />
-            </div>
-          </Link>
-          <Link href={`/${companyId}/${courseId}/lesson-1`}>
-            <div className="p-2 transition group hover:bg-slate-200 rounded-lg cursor-pointer flex items-start text-slate-600 justify-between gap-2">
-              <FontAwesomeIcon
-                icon={faCircleCheck}
-                className="text-emerald-500 my-1"
-              />
-              <span className="flex-1">
-                Nullam aliquet sit amet risus vehicu
-              </span>
-              <FontAwesomeIcon
-                icon={faStar}
-                className="opacity-0 my-1 group-hover:opacity-100 transition hover:text-amber-500 text-slate-400"
-              />
-            </div>
-          </Link>
-          <Link href={`/${companyId}/${courseId}/lesson-1`}>
-            <div className="p-2 transition hover:bg-slate-300 rounded-lg cursor-pointer flex items-start text-black font-semibold bg-slate-200 justify-between gap-2 group">
-              <FontAwesomeIcon
-                icon={faSpinner}
-                className="text-slate-700 my-1 animate-spin"
-              />
-              <span className="flex-1">
-                Pellentesque ultricies iaculis augue rutrum
-              </span>
-              <FontAwesomeIcon
-                icon={faStar}
-                className="opacity-0 my-1 group-hover:opacity-100 transition hover:text-amber-500 text-slate-400"
-              />
-            </div>
-          </Link>
-          <Link href={`/${companyId}/${courseId}/lesson-1`}>
-            <div className="p-2 transition hover:bg-slate-200 rounded-lg cursor-pointer flex items-start text-slate-600 justify-between gap-2 group">
-              <FontAwesomeIcon
-                icon={faCirclePlay}
-                className="text-slate-500 my-1"
-              />
-              <span className="flex-1">
-                Phasellus ut ipsum ac eros porta hendrerit
-              </span>
-              <FontAwesomeIcon
-                icon={faStar}
-                className="opacity-0 my-1 group-hover:opacity-100 transition hover:text-amber-500 text-slate-400"
-              />
-            </div>
-          </Link>
-        </div>
+        ))}
       </div>
       <div className="flex-1">{children}</div>
     </div>

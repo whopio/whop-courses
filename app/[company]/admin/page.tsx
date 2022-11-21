@@ -38,7 +38,6 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
         <thead>
           <tr>
             <th>Course</th>
-            <th>Duration</th>
             <th>Requirements</th>
             <th>Status</th>
           </tr>
@@ -55,7 +54,7 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
                     <Image
                       placeholder="blur"
                       blurDataURL={blurDataURL}
-                      src={course.coverImage}
+                      src={course.coverImage || "/images/placeholder.png"}
                       alt="Course Cover Image"
                       width={210}
                       height={118}
@@ -70,7 +69,6 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
                   </div>
                 </Link>
               </td>
-              <td className="py-4">xxx Minutes</td>
               <td className="py-4">
                 <span className="inline-block py-1 px-2 bg-neutral-200 rounded text-sm font-semibold">
                   An Access Pass

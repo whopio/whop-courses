@@ -1,4 +1,5 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cva, VariantProps } from "class-variance-authority";
 import Link, { LinkProps } from "next/link";
@@ -105,6 +106,8 @@ type ButtonBaseProps = {
   iconLeft?: IconProp;
   iconRight?: IconProp;
   extraClasses?: string;
+  disabled?: boolean;
+  loading?: boolean;
 } & VariantProps<typeof button>;
 
 type ButtonProps = ButtonBaseProps &
@@ -162,18 +165,25 @@ export function Button(props: ButtonProps) {
     children,
     iconLeft,
     iconRight,
+    disabled,
+    loading,
     ...rest
   } = props;
   const c = button({
-    variant: variant,
-    color: color,
+    variant: disabled ? "light" : variant,
+    color: disabled ? "neutral" : color,
     size: size,
     fullWidth: fullWidth,
     class: extraClasses,
   });
   const kids = (
     <>
-      {iconLeft && <FontAwesomeIcon icon={iconLeft} />}
+      {iconLeft &&
+        (loading ? (
+          <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+        ) : (
+          <FontAwesomeIcon icon={iconLeft} />
+        ))}
       {children}
       {iconRight && <FontAwesomeIcon icon={iconRight} />}
     </>
@@ -186,7 +196,7 @@ export function Button(props: ButtonProps) {
     );
   } else {
     return (
-      <button className={c} {...rest}>
+      <button className={c} disabled={disabled} {...rest}>
         {kids}
       </button>
     );

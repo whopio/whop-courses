@@ -30,7 +30,7 @@ model Course {
   id          String    @id @default(uuid())
   title       String
   description String
-  coverImage  String
+  coverImage  String?
   company     Company   @relation(fields: [companyId], references: [id])
   companyId   String
   chapters    Chapter[]

@@ -7,7 +7,8 @@ import { IconButton } from "@/ui/IconButton";
 import {
   faArrowRightFromBracket,
   faCaretDown,
-  faLockOpen,
+  faGear,
+  faLinesLeaning,
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -79,23 +80,38 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
             icon={faArrowRightFromBracket}
           />
         </div>
-        <div className="flex-1 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
+          <div className="font-bold text-white">Courses</div>
           {courses.map((course) => (
             <Link
               key={course.id}
               href={`/${params!.company}/${course.id}`}
               className={
-                "  p-4 rounded-lg flex items-center text-slate-50 transition" +
+                "  p-4 rounded-lg flex items-center text-slate-300 transition" +
                 (course.id === params!.course
                   ? " bg-slate-800 hover:bg-slate-700"
                   : " hover:bg-slate-800")
               }
             >
-              <FontAwesomeIcon icon={faLockOpen} className="w-10" />
+              <FontAwesomeIcon icon={faLinesLeaning} className="w-10" />
               <span>{course.title}</span>
             </Link>
           ))}
         </div>
+        <div className="flex flex-col gap-2">
+          <div className="font-bold text-white">Admin</div>
+
+          <Link
+            href={`/${params!.company}/admin`}
+            className={
+              "p-4 rounded-lg flex items-center text-slate-300 transition hover:bg-slate-800"
+            }
+          >
+            <FontAwesomeIcon icon={faGear} className="w-10" />
+            <span>Manage Courses</span>
+          </Link>
+        </div>
+        <div className="flex-1"></div>
         <Button
           link
           fullWidth

@@ -1,22 +1,40 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ZodSchema } from "zod";
 
-export type ApiResponse<T> =
-  | {
-      status: "success";
-      data: T;
-    }
-  | {
-      status: "error";
-      message: string;
-    };
+/*
+Some DOCS for this file:
 
-type RequestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-type HandlerFunction<T> = (
+This is a wrapper around the Next.js API routes. It provides a few things:
+- A way to add context to the request
+- Automatic typing for the request and response
+- Post input validation using 'postSafe'
+
+Essentially it makes creating typesafe NextJS API routes quick and easy.
+
+The API is designed to be used like this:
+1. Create a context function using API.contextFunction
+2. Add the context function to the API using API.withContext
+3. Add a handler to the API using API.get, API.post, etc. (or API.zpost, etc. for input validation)
+4. Export the API as the default export in the /api/path/to/route.ts file
+5. export the response types using 
+  export type TMyApiRouteResponse = APIType<typeof handler>
+
+*/
+export type ApiSuccessResponse<T> = {
+  status: "success";
+  data: T;
+};
+export type ApiErrorResponse = {
+  status: "error";
+  message: string;
+};
+export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+
+type HandlerFunction<T, Return> = (
   req: NextApiRequest,
   res: NextApiResponse,
   context: T
-) => any | Promise<any>;
+) => Return | Promise<Return>;
 type ContextBuilderFunction<T> = (
   req: NextApiRequest,
   res: NextApiResponse
@@ -27,60 +45,177 @@ type ContextExtendorFunction<T, R> = (
   ctx: T
 ) => R | Promise<R>;
 
-export class API<T> extends Function {
-  private _handlers: Partial<Record<RequestMethod, HandlerFunction<T>>> = {};
-  private _contextBuilder: ContextBuilderFunction<T>;
+export class API<
+  Context,
+  Get = never,
+  Post = never,
+  Put = never,
+  Patch = never,
+  Delete = never,
+  PostBody = undefined,
+  PutBody = undefined,
+  PatchBody = undefined
+> extends Function {
+  private _contextBuilder: ContextBuilderFunction<Context>;
+  private _getHandler: HandlerFunction<Context, Get> | undefined;
+  private _postHandler: HandlerFunction<Context, Post> | undefined;
+  private _putHandler: HandlerFunction<Context, Put> | undefined;
+  private _patchHandler: HandlerFunction<Context, Patch> | undefined;
+  private _deleteHandler: HandlerFunction<Context, Delete> | undefined;
 
-  constructor(contextBuilder: ContextBuilderFunction<T>) {
+  private constructor(
+    contextBuilder: ContextBuilderFunction<Context>,
+    getHandler?: HandlerFunction<Context, Get>,
+    postHandler?: HandlerFunction<Context, Post>,
+    putHandler?: HandlerFunction<Context, Put>,
+    patchHandler?: HandlerFunction<Context, Patch>,
+    deleteHandler?: HandlerFunction<Context, Delete>
+  ) {
     super("...args", "return this._call(...args)");
     this._contextBuilder = contextBuilder;
-    this._handlers = {};
+    this._getHandler = getHandler;
+    this._postHandler = postHandler;
+    this._putHandler = putHandler;
+    this._patchHandler = patchHandler;
+    this._deleteHandler = deleteHandler;
     return new Proxy(this, {
       apply: (target, thisArg, [req, res]) => target._call(req, res),
     });
   }
 
-  get(handler: HandlerFunction<T>) {
-    this._handlers.GET = handler;
-    return this;
+  get<R>(handler: HandlerFunction<Context, R>) {
+    return new API(
+      this._contextBuilder,
+      handler,
+      this._postHandler,
+      this._putHandler,
+      this._patchHandler,
+      this._deleteHandler
+    );
   }
-  post(handler: HandlerFunction<T>) {
-    this._handlers.POST = handler;
-    return this;
+
+  post<R, B = undefined>(handler: HandlerFunction<Context, R>) {
+    return new API<Context, Get, R, Put, Patch, Delete, B, PutBody, PatchBody>(
+      this._contextBuilder,
+      this._getHandler,
+      handler,
+      this._putHandler,
+      this._patchHandler,
+      this._deleteHandler
+    );
   }
-  postSafe<D>(
+  zpost<D, R>(
     schema: ZodSchema<D>,
     handler: (
       data: D,
-      ctx: T,
+      ctx: Context,
       req: NextApiRequest,
       res: NextApiResponse
-    ) => any | Promise<any>
+    ) => R | Promise<R>
   ) {
-    this._handlers.POST = async (req, res, ctx) => {
-      const data = schema.parse(req.body);
-      return handler(data, ctx, req, res);
-    };
-    return this;
+    return new API<Context, Get, R, Put, Patch, Delete, D, PutBody, PatchBody>(
+      this._contextBuilder,
+      this._getHandler,
+      async (req, res, ctx) => {
+        const data = schema.parse(req.body);
+        return handler(data, ctx, req, res);
+      },
+      this._putHandler,
+      this._patchHandler,
+      this._deleteHandler
+    );
   }
-  put(handler: HandlerFunction<T>) {
-    this._handlers.PUT = handler;
-    return this;
+  put<R, B = undefined>(handler: HandlerFunction<Context, R>) {
+    return new API<
+      Context,
+      Get,
+      Post,
+      R,
+      Patch,
+      Delete,
+      PostBody,
+      B,
+      PatchBody
+    >(
+      this._contextBuilder,
+      this._getHandler,
+      this._postHandler,
+      handler,
+      this._patchHandler,
+      this._deleteHandler
+    );
   }
-  patch(handler: HandlerFunction<T>) {
-    this._handlers.PATCH = handler;
-    return this;
+  zput<D, R>(
+    schema: ZodSchema<D>,
+    handler: (
+      data: D,
+      ctx: Context,
+      req: NextApiRequest,
+      res: NextApiResponse
+    ) => R | Promise<R>
+  ) {
+    return new API<
+      Context,
+      Get,
+      Post,
+      R,
+      Patch,
+      Delete,
+      PostBody,
+      D,
+      PatchBody
+    >(
+      this._contextBuilder,
+      this._getHandler,
+      this._postHandler,
+      async (req, res, ctx) => {
+        const data = schema.parse(req.body);
+        return handler(data, ctx, req, res);
+      },
+      this._patchHandler,
+      this._deleteHandler
+    );
   }
-  delete(handler: HandlerFunction<T>) {
-    this._handlers.DELETE = handler;
-    return this;
+  patch<R, B = undefined>(handler: HandlerFunction<Context, R>) {
+    return new API<Context, Get, Post, Put, R, Delete, PostBody, PutBody, B>(
+      this._contextBuilder,
+      this._getHandler,
+      this._postHandler,
+      this._putHandler,
+      handler,
+      this._deleteHandler
+    );
   }
-
-  extend<R>(contextBuilder: ContextExtendorFunction<T, R>) {
-    return new API<R>(async (req, res) => {
-      const context = await this._contextBuilder(req, res);
-      return contextBuilder(req, res, context);
-    });
+  zpatch<D, R>(
+    schema: ZodSchema<D>,
+    handler: (
+      data: D,
+      ctx: Context,
+      req: NextApiRequest,
+      res: NextApiResponse
+    ) => R | Promise<R>
+  ) {
+    return new API<Context, Get, Post, Put, R, Delete, PostBody, PutBody, D>(
+      this._contextBuilder,
+      this._getHandler,
+      this._postHandler,
+      this._putHandler,
+      async (req, res, ctx) => {
+        const data = schema.parse(req.body);
+        return handler(data, ctx, req, res);
+      },
+      this._deleteHandler
+    );
+  }
+  delete<R>(handler: HandlerFunction<Context, R>) {
+    return new API(
+      this._contextBuilder,
+      this._getHandler,
+      this._postHandler,
+      this._putHandler,
+      this._patchHandler,
+      handler
+    );
   }
 
   static contextFunction<I extends {}, R extends {}>(
@@ -102,10 +237,27 @@ export class API<T> extends Function {
     });
   }
 
+  private getHandler(method: string | undefined) {
+    switch (method) {
+      case "GET":
+        return this._getHandler;
+      case "POST":
+        return this._postHandler;
+      case "PUT":
+        return this._putHandler;
+      case "PATCH":
+        return this._patchHandler;
+      case "DELETE":
+        return this._deleteHandler;
+      default:
+        return undefined;
+    }
+  }
+
   async _call(req: NextApiRequest, res: NextApiResponse) {
     try {
       const context = await this._contextBuilder(req, res);
-      const handler = this._handlers[req.method as RequestMethod];
+      const handler = this.getHandler(req.method);
       if (!handler) {
         res.status(405);
         throw new Error(`No handler for method ${req.method}`);
@@ -151,3 +303,38 @@ class APIContextFunction<Input extends {}, Result extends {}> {
     return this.fn(req, res, input);
   }
 }
+
+export type APIType<T> = T extends API<
+  infer Context,
+  infer Get,
+  infer Post,
+  infer Put,
+  infer Patch,
+  infer Delete,
+  infer PostBody,
+  infer PutBody,
+  infer PatchBody
+>
+  ? {
+      RESPONSE: {
+        GET: Get;
+        POST: Post;
+        PUT: Put;
+        PATCH: Patch;
+        DELETE: Delete;
+      };
+      BODY: {
+        GET: never;
+        POST: PostBody;
+        PUT: PutBody;
+        PATCH: PatchBody;
+        DELETE: never;
+      };
+    }
+  : never;
+
+export type APIGetResult<T> = APIType<T>["RESPONSE"]["GET"];
+export type APIPostResult<T> = APIType<T>["RESPONSE"]["POST"];
+export type APIPutResult<T> = APIType<T>["RESPONSE"]["PUT"];
+export type APIPatchResult<T> = APIType<T>["RESPONSE"]["PATCH"];
+export type APIDeleteResult<T> = APIType<T>["RESPONSE"]["DELETE"];

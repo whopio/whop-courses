@@ -6,7 +6,7 @@ import { ButtonHTMLAttributes, DetailedHTMLProps, FC } from "react";
 import { buttonCompoundVariants } from "./Button";
 
 const iconButton = cva(
-  "rounded-full hover:shadow-lg transition-all flex items-center justify-center cursor-pointer",
+  "rounded-full hover:shadow-lg transition-all flex items-center justify-center cursor-pointer active:scale-105 active:-rotate-6",
   {
     variants: {
       variant: {

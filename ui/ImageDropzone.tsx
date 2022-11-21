@@ -1,8 +1,8 @@
 "use client";
 
 import { blurDataURL } from "@/lib/util";
-import { Button } from "@/ui/Button";
-import { faImages } from "@fortawesome/free-solid-svg-icons";
+import { IconButton } from "@/ui/IconButton";
+import { faImages, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { Dispatch, FC, SetStateAction, useCallback, useState } from "react";
@@ -85,12 +85,13 @@ export const ImageDropzone: FC<{
           alt="Uploaded Image"
           className="rounded-lg object-cover"
         />
-        <div className="rounded-lg absolute top-0 left-0 w-full h-full opacity-0 transition hover:opacity-100 flex items-center flex-col justify-center bg-black/50 gap-2">
-          <p className="font-bold text-white">Upload a new image</p>
-          <div>
-            <Button onClick={() => setImage(null)}>Upload Another</Button>
-          </div>
-        </div>
+        <IconButton
+          icon={faTrashCan}
+          color="danger"
+          variant="filled"
+          extraClasses="absolute top-4 right-4"
+          onClick={() => setImage(null)}
+        />
       </div>
     );
   }

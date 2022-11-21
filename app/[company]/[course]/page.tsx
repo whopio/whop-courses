@@ -18,7 +18,7 @@ export default async function CourseIndexPage({ params }: PageProps) {
           placeholder="blur"
           blurDataURL={blurDataURL}
           className="rounded-lg w-full max-h-80 object-cover"
-          src={course.coverImage}
+          src={course.coverImage || "/images/placeholder.png"}
           alt="Course Header Image"
           width={1280}
           height={384}

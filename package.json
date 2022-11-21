@@ -33,6 +33,7 @@
     "iron-webcrypto": "^0.2.5",
     "next": "13.0.3",
     "react": "18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "server-only": "^0.0.1",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@types/cookie": "^0.5.1",
+    "@types/react-beautiful-dnd": "^13.1.2",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.19",
     "prettier": "^2.7.1",

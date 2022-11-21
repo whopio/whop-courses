@@ -1,16 +1,20 @@
+import { db } from "@/lib/db";
+import { PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
 import {
   faArrowCircleLeft,
   faArrowCircleRight,
+  faCheckCircle,
   faClock,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { VideoPlayer } from "./VideoPlayer";
 
-export default async function LessonPage() {
-  // const lesson = await db.lesson.findUnique({ where: { id: 1 } });
-
+export default async function LessonPage({ params }: PageProps) {
+  const lessonId = params!.lesson!;
+  const lesson = await db.lesson.findUnique({ where: { id: lessonId } });
+  if (!lesson) throw Error("404 - Lesson not found");
   return (
     <div className="p-8 flex flex-col gap-4 h-screen max-w-6xl m-auto">
       <div className="flex-1 flex flex-col gap-4 overflow-auto">
@@ -18,67 +22,19 @@ export default async function LessonPage() {
           <VideoPlayer />
         </div>
         <div className="flex items-center justify-between">
-          <h1 className="font-bold text-2xl">
-            Pellentesque ultricies iaculis augue rutrum
-          </h1>
+          <h1 className="font-bold text-2xl">{lesson.title}</h1>
           <div className="flex items-center">
             <FontAwesomeIcon icon={faClock} className="text-neutral-500" />
-            <span className="ml-2 text-neutral-500">25 Minutes</span>
+            <span className="ml-2 text-neutral-500">XX Minutes</span>
           </div>
         </div>
         <div className="text-neutral-900 flex-1 flex flex-col gap-3">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut
-            quam ultrices, rutrum elit et, vestibulum quam. Nulla eget lobortis
-            nisi. Aliquam a mattis odio, a tincidunt magna, proin quis
-            vestibulum purus, sed porttitor nulla. Duis eget magna at risus
-            vestibulum pellentesque habitant morbi tristique senectus et netus
-            et malesuada fames ac turpis egestas. Integer convallis eu metus in
-            pretium. Pellentesque posuere ullamcorper mi, ac ullamcorper justo
-            dictum et.
-          </p>{" "}
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut
-            quam ultrices, rutrum elit et, vestibulum quam. Nulla eget lobortis
-            nisi. Aliquam a mattis odio, a tincidunt magna, proin quis
-            vestibulum purus, sed porttitor nulla. Duis eget magna at risus
-            vestibulum pellentesque habitant morbi tristique senectus et netus
-            et malesuada fames ac turpis egestas. Integer convallis eu metus in
-            pretium. Pellentesque posuere ullamcorper mi, ac ullamcorper justo
-            dictum et.
-          </p>{" "}
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut
-            quam ultrices, rutrum elit et, vestibulum quam. Nulla eget lobortis
-            nisi. Aliquam a mattis odio, a tincidunt magna, proin quis
-            vestibulum purus, sed porttitor nulla. Duis eget magna at risus
-            vestibulum pellentesque habitant morbi tristique senectus et netus
-            et malesuada fames ac turpis egestas. Integer convallis eu metus in
-            pretium. Pellentesque posuere ullamcorper mi, ac ullamcorper justo
-            dictum et.
-          </p>{" "}
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut
-            quam ultrices, rutrum elit et, vestibulum quam. Nulla eget lobortis
-            nisi. Aliquam a mattis odio, a tincidunt magna, proin quis
-            vestibulum purus, sed porttitor nulla. Duis eget magna at risus
-            vestibulum pellentesque habitant morbi tristique senectus et netus
-            et malesuada fames ac turpis egestas. Integer convallis eu metus in
-            pretium. Pellentesque posuere ullamcorper mi, ac ullamcorper justo
-            dictum et.
-          </p>{" "}
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut
-            quam ultrices, rutrum elit et, vestibulum quam. Nulla eget lobortis
-            nisi. Aliquam a mattis odio, a tincidunt magna, proin quis
-            vestibulum purus, sed porttitor nulla. Duis eget magna at risus
-            vestibulum pellentesque habitant morbi tristique senectus et netus
-            et malesuada fames ac turpis egestas. Integer convallis eu metus in
-            pretium. Pellentesque posuere ullamcorper mi, ac ullamcorper justo
-            dictum et.
-          </p>
+          <p>{lesson.description}</p>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2 p-2">
+          <Button variant="outline" color="success" iconLeft={faCheckCircle}>
+            Marked as Completed
+          </Button>
           <Button variant="outline" color="accent" iconLeft={faStar}>
             Marked as Favourite
           </Button>

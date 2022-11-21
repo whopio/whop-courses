@@ -62,7 +62,7 @@ export default async function CompanyPage({ params }: PageProps) {
                 key={course.id}
                 companyId={company.route}
                 courseId={course.id}
-                image={course.coverImage}
+                image={course.coverImage || "/images/placeholder.png"}
                 title={course.title}
                 subtitle={"Todo, workout text"}
               />
@@ -79,7 +79,7 @@ export default async function CompanyPage({ params }: PageProps) {
             key={course.id}
             companyId={company.route}
             courseId={course.id}
-            image={course.coverImage}
+            image={course.coverImage || "/images/placeholder.png"}
             title={course.title}
             subtitle={"xxx Minutes"}
           />

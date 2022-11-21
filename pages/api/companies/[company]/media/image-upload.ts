@@ -1,8 +1,8 @@
-import { API } from "@/lib/api/api";
+import { API, APIType } from "@/lib/api/api";
 import { companyAdminUserContext } from "@/lib/api/context-functions";
 import FormData from "form-data";
 
-export default API.withContext(companyAdminUserContext).get(async () => {
+const handler = API.withContext(companyAdminUserContext).get(async () => {
   const requestData = new FormData();
   requestData.append("requireSignedURLs", "false");
   const response = await fetch(
@@ -24,3 +24,7 @@ export default API.withContext(companyAdminUserContext).get(async () => {
 
   return { url: data.result.uploadURL, id: data.result.id };
 });
+
+export default handler;
+
+export type APIImageUpload = APIType<typeof handler>;

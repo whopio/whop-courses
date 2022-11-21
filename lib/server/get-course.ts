@@ -32,3 +32,5 @@ export const getCourse = cache(async (courseId: string, userId: string) => {
   if (!course) throw Error("404 - Failed to find course. ");
   return course;
 });
+
+export type TGetCourse = Awaited<ReturnType<typeof getCourse>>;
