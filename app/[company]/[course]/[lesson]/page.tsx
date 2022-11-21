@@ -29,7 +29,7 @@ export default async function LessonPage({ params }: PageProps) {
           </div>
         </div>
         <div className="text-neutral-900 flex-1 flex flex-col gap-3">
-          <p>{lesson.description}</p>
+          <p className=" whitespace-pre-line">{lesson.description}</p>
         </div>
         <div className="flex justify-end gap-2 p-2">
           <Button variant="outline" color="success" iconLeft={faCheckCircle}>

@@ -22,7 +22,7 @@ const handler = API.withContext(companyAdminUserContext).get(async () => {
   }
   const data = await response.json();
 
-  return { url: data.result.uploadURL, id: data.result.id };
+  return { url: data.result.uploadURL as string, id: data.result.id as string };
 });
 
 export default handler;

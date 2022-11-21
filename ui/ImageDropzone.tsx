@@ -1,5 +1,6 @@
 "use client";
 
+import { apiGet } from "@/lib/api/api-request";
 import { blurDataURL } from "@/lib/util";
 import { IconButton } from "@/ui/IconButton";
 import { faImages, faTrashCan } from "@fortawesome/free-solid-svg-icons";
@@ -7,14 +8,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { Dispatch, FC, SetStateAction, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { APIImageUpload } from "../pages/api/companies/[company]/media/image-upload";
 
 async function getUploadUrl(
   companyId: string
 ): Promise<{ url: string; id: string }> {
-  const res = await fetch(`/api/companies/${companyId}/media/image-upload`);
-  if (!res.ok) throw Error("Failed to get upload url");
-  const data = await res.json();
-  return data.data;
+  return apiGet<APIImageUpload>(`/companies/${companyId}/media/image-upload`);
 }
 
 export const ImageDropzone: FC<{

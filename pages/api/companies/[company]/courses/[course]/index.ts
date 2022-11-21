@@ -110,13 +110,14 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
           const lesson = chapter.lessons[j];
           const dbLesson = lessonMap.get(lesson.id);
           if (!dbLesson) continue;
-          if (dbLesson.order !== j) {
+          if (dbLesson.order !== j || dbLesson.chapterId !== chapter.id) {
             await db.lesson.update({
               where: {
                 id: lesson.id,
               },
               data: {
                 order: j,
+                chapterId: chapter.id,
               },
             });
           }

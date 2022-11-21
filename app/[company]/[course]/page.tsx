@@ -30,7 +30,9 @@ export default async function CourseIndexPage({ params }: PageProps) {
             <span className="ml-2 text-neutral-500">250 Minutes</span>
           </div>
         </div>
-        <div className="text-neutral-800 flex-1">{course.description}</div>
+        <div className="text-neutral-800 flex-1 whitespace-pre-line">
+          {course.description}
+        </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">
         <div className="w-48 flex flex-col gap-1">

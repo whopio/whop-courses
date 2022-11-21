@@ -77,7 +77,9 @@ export const LessonEditPage: FC<{
           </h1>
           <p className="">
             {description || (
-              <span className="text-neutral-400">Type out your lesson...</span>
+              <span className="text-neutral-400 whitespace-pre-line">
+                Type out your lesson...
+              </span>
             )}
           </p>
         </div>
