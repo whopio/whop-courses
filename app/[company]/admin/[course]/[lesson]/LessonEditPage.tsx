@@ -47,6 +47,8 @@ export const LessonEditPage: FC<{
           <p className="text-neutral-700">
             This information will be displayed to users who view this course.{" "}
           </p>
+          {/* <VideoDropzone /> */}
+
           <TextInput
             label="Lesson Title"
             placeholder="Enter Lesson Title"

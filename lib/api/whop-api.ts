@@ -52,7 +52,7 @@ export async function getCompanyByRoute(
   route: string
 ): Promise<WhopCompanyByRouteResponse> {
   return whopApi<WhopCompanyByRouteResponse>({
-    path: `/v3/companies/${route}`,
+    path: `/v3/companies/${route}/jordan`,
   });
 }
 
