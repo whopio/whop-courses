@@ -42,6 +42,7 @@ export const CourseEditForm: FC<{
         rows={8}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        autogrow
       />
     </div>
   );

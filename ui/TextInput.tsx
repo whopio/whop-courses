@@ -33,12 +33,35 @@ export const TextInput: FC<TextInputProps> = ({
   );
 };
 
-export const TextArea: FC<TextAreaProps> = ({ label, ...props }) => {
+export const TextArea: FC<TextAreaProps & { autogrow?: boolean }> = ({
+  label,
+  autogrow,
+  ...props
+}) => {
   const classes = inputClasses({});
   return (
-    <div>
+    <div className="">
       {label && <label className="block text-sm mb-1 font-bold">{label}</label>}
-      <textarea className={classes} {...props} />
+      {autogrow ? (
+        <div className="relative">
+          <div
+            className={
+              "py-2 px-4 w-full rounded-lg border-2 whitespace-pre-wrap"
+            }
+          >
+            {props.value}x
+          </div>
+          <textarea
+            className={
+              classes +
+              " resize-none absolute top-0 left-0 right-0 bottom-0 w-full h-full"
+            }
+            {...props}
+          />
+        </div>
+      ) : (
+        <textarea className={classes} {...props} />
+      )}
     </div>
   );
 };

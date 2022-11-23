@@ -47,7 +47,7 @@ export default async function CourseIndexPage({ params }: PageProps) {
         <div className="flex-1 text-right">
           <span className="font-semibold">
             <span className="text-neutral-600">
-              Estimated course duration 250 minutes (4+ hours)
+              Estimated course duration: {formattedDurationEstimate(course)}
             </span>
           </span>
         </div>

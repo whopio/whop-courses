@@ -19,14 +19,17 @@ export const LessonEditPage: FC<{
   lesson: TGetCourse["chapters"][number]["lessons"][number];
 }> = ({ companyId, courseId, lesson, companyRoute, lessonId }) => {
   const router = useRouter();
-  const [videoId, setVideoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [videoId, setVideoId] = useState<string | null>(lesson.mainVideoId);
   const [title, setTitle] = useState(lesson.title);
   const [description, setDescription] = useState(lesson.description || "");
 
   const [videoData] = usePromise(getVideoPromise(companyId, videoId));
 
-  const saved = title === lesson.title && description === lesson.description;
+  const saved =
+    title === lesson.title &&
+    description === lesson.description &&
+    videoId === lesson.mainVideoId;
 
   async function save() {
     if (saved) return;
@@ -71,11 +74,12 @@ export const LessonEditPage: FC<{
             rows={8}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            autogrow
           />
         </div>
         <div className="flex-1 overflow-auto shrink-0 pl-4 gap-4 flex flex-col">
           <div
-            className="rounded-lg w-full overflow-hidden"
+            className="rounded-lg w-full overflow-hidden shrink-0"
             style={{ aspectRatio }}
           >
             {videoData ? (
@@ -93,11 +97,9 @@ export const LessonEditPage: FC<{
               <span className="text-neutral-400">Enter lesson title</span>
             )}
           </h1>
-          <p className="">
+          <p className="whitespace-pre-line">
             {description || (
-              <span className="text-neutral-400 whitespace-pre-line">
-                Type out your lesson...
-              </span>
+              <span className="text-neutral-400">Type out your lesson...</span>
             )}
           </p>
         </div>
