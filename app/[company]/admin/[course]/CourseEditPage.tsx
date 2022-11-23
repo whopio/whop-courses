@@ -1,6 +1,6 @@
 "use client";
 
-import { apiPost } from "@/lib/api/api-request";
+import { apiDelete, apiPost } from "@/lib/api/api-request";
 import type { TGetCourse } from "@/lib/server/get-course";
 import { Button } from "@/ui/Button";
 import {
@@ -40,6 +40,7 @@ export const CourseEditPage: FC<{
   );
 
   const [loading, setLoading] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingNewChapter, setLoadingNewChapter] = useState(false);
   const [image, setImage] = useState<string | null>(course.coverImage);
   const [title, setTitle] = useState(course.title);
@@ -111,6 +112,20 @@ export const CourseEditPage: FC<{
     router.push(`/${companyRoute}/admin/${courseId}/${lesson.id}`);
   }
 
+  async function deleteCourse() {
+    if (
+      !confirm(
+        "Are you sure you want to delete this course? This action cannot be undone."
+      )
+    )
+      return;
+    setLoadingDelete(true);
+    await apiDelete(`/companies/${companyId}/courses/${courseId}`);
+    setLoadingDelete(false);
+    router.refresh();
+    router.push(`/${companyRoute}/admin`);
+  }
+
   return (
     <>
       <div className="flex items-stretch flex-1 overflow-hidden">
@@ -158,7 +173,7 @@ export const CourseEditPage: FC<{
         </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">
-        <Button color="danger" iconLeft={faTrashCan}>
+        <Button color="danger" iconLeft={faTrashCan} onClick={deleteCourse}>
           Delete
         </Button>
         <div className="flex-1"></div>

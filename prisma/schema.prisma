@@ -46,7 +46,7 @@ model Chapter {
   title       String
   description String
   status      ChapterStatus
-  course      Course        @relation(fields: [courseId], references: [id])
+  course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   courseId    String
   lessons     Lesson[]
   order       Int
@@ -63,7 +63,7 @@ model Lesson {
   mainVideo        MuxVideo?               @relation(fields: [mainVideoId], references: [id])
   images           String[]
   files            String[]
-  chapter          Chapter                 @relation(fields: [chapterId], references: [id])
+  chapter          Chapter                 @relation(fields: [chapterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   chapterId        String
   userInteractions UserLessonInteraction[]
   order            Int
@@ -79,9 +79,9 @@ enum UserLessonStatus {
 
 model UserLessonInteraction {
   id       String           @id @default(uuid())
-  user     User             @relation(fields: [userId], references: [id])
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId   String
-  lesson   Lesson           @relation(fields: [lessonId], references: [id])
+  lesson   Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   lessonId String
   status   UserLessonStatus
   liked    Boolean

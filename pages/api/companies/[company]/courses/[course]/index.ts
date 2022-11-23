@@ -4,6 +4,8 @@ import {
   courseContext,
 } from "@/lib/api/context-functions";
 import { db } from "@/lib/db";
+import { MuxAPI } from "@/lib/mux-api";
+import { notEmpty } from "@/lib/util";
 import { Chapter, Lesson } from "@prisma/client";
 import z from "zod";
 
@@ -31,11 +33,40 @@ export type TEditCourseData = z.infer<typeof EditCourseSchema>;
 
 const handler = API.withContext(companyAdminUserContext.add(courseContext))
   .delete(async (req, res, ctx) => {
-    return await db.course.delete({
+    const course = await db.course.delete({
       where: {
         id: ctx.courseId,
       },
+      include: {
+        chapters: {
+          include: {
+            lessons: {
+              where: {
+                mainVideoId: {
+                  not: null,
+                },
+              },
+              include: {
+                mainVideo: true,
+              },
+            },
+          },
+        },
+      },
     });
+    const videosToDelete = course.chapters
+      .flatMap((c) => c.lessons)
+      .map((l) => l.mainVideo?.assetId)
+      .filter((v) => notEmpty(v));
+
+    for (const assetId in videosToDelete) {
+      await MuxAPI.Video.Assets.del(assetId);
+    }
+
+    return {
+      ...course,
+      chapters: undefined,
+    };
   })
   .zpost(EditCourseSchema, async (data, ctx) => {
     const course = await db.course.update({
@@ -56,6 +87,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
       });
       const lessons = await db.lesson.findMany({
         where: { chapter: { courseId: ctx.courseId } },
+        include: { mainVideo: true },
       });
 
       const chapterMap = new Map<string, Chapter>();
@@ -75,6 +107,12 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
 
       const chaptersToDelete = chapters.filter((c) => !chapterIds.has(c.id));
       const lessonsToDelete = lessons.filter((l) => !lessonIds.has(l.id));
+
+      for (const lesson of lessonsToDelete) {
+        if (lesson.mainVideo && lesson.mainVideo.assetId) {
+          await MuxAPI.Video.Assets.del(lesson.mainVideo.assetId);
+        }
+      }
 
       await db.chapter.deleteMany({
         where: {

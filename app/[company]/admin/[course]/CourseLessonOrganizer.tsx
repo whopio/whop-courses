@@ -65,9 +65,21 @@ export const CourseLessonOrganizer: FC<{
   };
 
   function removeChapter(id: string) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this chapter? This cannot be undone."
+      )
+    )
+      return;
     setStructure((s) => s.filter((c) => c.id !== id));
   }
   function removeLesson(chid: string, id: string) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this lesson? This cannot be undone."
+      )
+    )
+      return;
     setStructure((s) =>
       s.map((c) =>
         c.id === chid
