@@ -23,6 +23,7 @@ type DropzoneProps = {
   acceptedMimeTypes: string[];
   previewImage: string | null;
   removeFile: () => void;
+  loadingMessage?: string;
 } & (
   | { multiple?: false; onDrop: (file: File) => void }
   | { multiple: true; onDrop: (files: File[]) => void }
@@ -39,9 +40,11 @@ export const Dropzone: FC<DropzoneProps> = ({
   multiple,
   previewImage,
   removeFile,
+  loadingMessage,
 }) => {
   const onDropCallback = useCallback(
     async (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) return;
       if (multiple) {
         onDrop(acceptedFiles);
       } else {
@@ -65,7 +68,7 @@ export const Dropzone: FC<DropzoneProps> = ({
       (acc, mimeType) => ({ ...acc, [mimeType]: [] }),
       {}
     ),
-    multiple: false,
+    multiple: multiple ?? false,
   });
 
   if (isUploading) {
@@ -76,7 +79,7 @@ export const Dropzone: FC<DropzoneProps> = ({
           aspectRatio: aspectRatio || "16/9",
         }}
       >
-        <div className="text-slate-500">Uploading...</div>
+        <div className="text-slate-500">{loadingMessage || "Uploading..."}</div>
 
         {uploadProgress === "indeterminate" ? (
           <div className="flex gap-4">
@@ -93,7 +96,7 @@ export const Dropzone: FC<DropzoneProps> = ({
         ) : (
           <div className="w-full h-2 bg-neutral-300 rounded-full">
             <div
-              className="h-full bg-primary-500 rounded-full"
+              className="h-full bg-primary-600 rounded-full transition-all animate-pulse"
               style={{ width: `${uploadProgress}%` }}
             ></div>
           </div>
@@ -131,7 +134,7 @@ export const Dropzone: FC<DropzoneProps> = ({
           backgroundPosition: "center",
         },
         className:
-          "rounded-lg border-2 transition hover:bg-neutral-100" +
+          "rounded-lg border-2 transition hover:bg-neutral-100 " +
           (isDragAccept
             ? "border-emerald-500"
             : isDragReject

@@ -1,18 +1,27 @@
-import { API } from "@/lib/api/api";
+import { API, APIType } from "@/lib/api/api";
 import { companyAdminUserContext } from "@/lib/api/context-functions";
-import Mux from "@mux/mux-node";
-const { Video } = new Mux(
-  process.env.MUX_TOKEN_ID!,
-  process.env.MUX_TOKEN_SECRET!
-);
+import { db } from "@/lib/db";
+import { MuxAPI } from "@/lib/mux-api";
 
-export default API.withContext(companyAdminUserContext).post(
+const handler = API.withContext(companyAdminUserContext).get(
   async (req, res, ctx) => {
-    await Video.Uploads.create({
-      cors_origin: "http://localhost:4300",
-      new_asset_settings: {
-        playback_policy: "signed",
+    const dbVid = await db.muxVideo.create({
+      data: {
+        status: "WAITING",
       },
     });
+
+    const vid = await MuxAPI.Video.Uploads.create({
+      cors_origin: "http://localhost:4300",
+      new_asset_settings: {
+        playback_policy: "public",
+        passthrough: dbVid.id,
+      },
+    });
+
+    return { dbId: dbVid.id, uploadUrl: vid.url };
   }
 );
+
+export default handler;
+export type APIVideoUpload = APIType<typeof handler>;

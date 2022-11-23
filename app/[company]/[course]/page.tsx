@@ -1,3 +1,4 @@
+import { formattedDurationEstimate } from "@/lib/duration-estimator";
 import { getCourse } from "@/lib/server/get-course";
 import { getUser } from "@/lib/server/get-user";
 import { blurDataURL, PageProps } from "@/lib/util";
@@ -27,7 +28,9 @@ export default async function CourseIndexPage({ params }: PageProps) {
           <h1 className="font-bold text-3xl">{course.title}</h1>
           <div className="flex items-center">
             <FontAwesomeIcon icon={faClock} className="text-neutral-500" />
-            <span className="ml-2 text-neutral-500">250 Minutes</span>
+            <span className="ml-2 text-neutral-500">
+              {formattedDurationEstimate(course)}
+            </span>
           </div>
         </div>
         <div className="text-neutral-800 flex-1 whitespace-pre-line">

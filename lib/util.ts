@@ -30,3 +30,10 @@ const toBase64 = (str: string) =>
 export const blurDataURL = `data:image/svg+xml;base64,${toBase64(
   shimmer(700, 475)
 )}`;
+
+export type WithoutNullableKeys<Type> = {
+  [Key in keyof Type]-?: NonNullable<Type[Key]>;
+};
+
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

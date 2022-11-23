@@ -22,6 +22,7 @@ export const getCourse = cache(async (courseId: string, userId: string) => {
                   userId,
                 },
               },
+              mainVideo: true,
             },
           },
         },

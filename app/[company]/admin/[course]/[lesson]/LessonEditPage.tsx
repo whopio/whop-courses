@@ -4,14 +4,12 @@ import { apiPost } from "@/lib/api/api-request";
 import type { TGetCourse } from "@/lib/server/get-course";
 import { Button } from "@/ui/Button";
 import { TextArea, TextInput } from "@/ui/TextInput";
-import {
-  faArrowUpRightFromSquare,
-  faSave,
-  faTrashCan,
-} from "@fortawesome/free-solid-svg-icons";
+import { getVideoPromise, usePromise, VideoDropzone } from "@/ui/VideoDropzone";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import { FC, useState } from "react";
 import { APILesson } from "../../../../../pages/api/companies/[company]/courses/[course]/lessons/[lesson]";
+import { VideoPlayer } from "../../../[course]/[lesson]/VideoPlayer";
 
 export const LessonEditPage: FC<{
   companyId: string;
@@ -21,10 +19,12 @@ export const LessonEditPage: FC<{
   lesson: TGetCourse["chapters"][number]["lessons"][number];
 }> = ({ companyId, courseId, lesson, companyRoute, lessonId }) => {
   const router = useRouter();
-
+  const [videoId, setVideoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState(lesson.title);
   const [description, setDescription] = useState(lesson.description || "");
+
+  const [videoData] = usePromise(getVideoPromise(companyId, videoId));
 
   const saved = title === lesson.title && description === lesson.description;
 
@@ -33,11 +33,16 @@ export const LessonEditPage: FC<{
     setLoading(true);
     await apiPost<APILesson>(
       `/companies/${companyId}/courses/${courseId}/lessons/${lessonId}`,
-      { description, title }
+      { description, title, videoId }
     );
     router.refresh();
     setLoading(false);
   }
+
+  const [w, h] = videoData?.aspectRatio.split(":").map((n) => Number(n)) || [
+    16, 9,
+  ];
+  const aspectRatio = w / h;
 
   return (
     <>
@@ -47,7 +52,11 @@ export const LessonEditPage: FC<{
           <p className="text-neutral-700">
             This information will be displayed to users who view this course.{" "}
           </p>
-          {/* <VideoDropzone /> */}
+          <VideoDropzone
+            companyId={companyId}
+            videoId={videoId}
+            setVideoId={setVideoId}
+          />
 
           <TextInput
             label="Lesson Title"
@@ -65,12 +74,19 @@ export const LessonEditPage: FC<{
           />
         </div>
         <div className="flex-1 overflow-auto shrink-0 pl-4 gap-4 flex flex-col">
-          <div className="aspect-video rounded-lg w-full overflow-hidden">
-            <div className="flex items-center justify-center bg-neutral-100 p-4 rounded-lg border-2 border-neutral-200 w-full h-full">
-              <span className="text-neutral-400 text-lg">
-                Media content will display here
-              </span>
-            </div>
+          <div
+            className="rounded-lg w-full overflow-hidden"
+            style={{ aspectRatio }}
+          >
+            {videoData ? (
+              <VideoPlayer playbackId={videoData.playbackId} />
+            ) : (
+              <div className="flex items-center justify-center bg-neutral-100 p-4 rounded-lg border-2 border-neutral-200 w-full h-full">
+                <span className="text-neutral-400 text-lg">
+                  Media content will display here
+                </span>
+              </div>
+            )}
           </div>
           <h1 className="text-3xl font-bold">
             {title || (
@@ -87,11 +103,7 @@ export const LessonEditPage: FC<{
         </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">
-        <Button color="danger" iconLeft={faTrashCan}>
-          Delete
-        </Button>
         <div className="flex-1"></div>
-        <Button iconLeft={faArrowUpRightFromSquare}>Preview</Button>
         <Button
           variant="filled"
           color="success"

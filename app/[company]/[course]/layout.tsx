@@ -1,3 +1,4 @@
+import { formattedDurationEstimate } from "@/lib/duration-estimator";
 import { getCourse } from "@/lib/server/get-course";
 import { getUser } from "@/lib/server/get-user";
 import { LayoutProps } from "@/lib/util";
@@ -27,7 +28,9 @@ export default async function Layout({ children, params }: LayoutProps) {
           <div key={chapter.id} className="flex flex-col gap-1">
             <div className="flex items-center justify-between p-2">
               <span className="font-semibold text-lg">{chapter.title}</span>
-              <span className="text-slate-500">XX Minutes</span>
+              <span className="text-slate-500">
+                {formattedDurationEstimate(chapter)}
+              </span>
             </div>
             {chapter.lessons.map((lesson) => (
               <Link

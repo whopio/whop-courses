@@ -6,6 +6,17 @@ import { parseTokenCookie } from "./cookie";
 import { UserSession } from "./session";
 import { getCompany } from "./whop-api";
 
+export function routeParam<Param extends string>(param: Param) {
+  return API.contextFunction(async (req, res) => {
+    const p = req.query[param];
+    invariant(typeof p === "string", `Invalid value for url param :${param}`);
+    const ctx = {
+      [param]: p,
+    };
+    return ctx as { [K in Param]: string };
+  });
+}
+
 export const companyContext = API.contextFunction(async (req, res) => {
   const route = req.query.company;
   invariant(typeof route === "string", "Invalid company route");

@@ -50,6 +50,8 @@ model Chapter {
   courseId    String
   lessons     Lesson[]
   order       Int
+
+  @@unique([courseId, order])
 }
 
 model Lesson {
@@ -65,6 +67,8 @@ model Lesson {
   chapterId        String
   userInteractions UserLessonInteraction[]
   order            Int
+
+  @@unique([chapterId, order])
 }
 
 enum UserLessonStatus {
@@ -84,8 +88,16 @@ model UserLessonInteraction {
 }
 
 model MuxVideo {
-  id      String   @id @default(uuid())
-  lessons Lesson[]
-  status  String
-  url     String
+  id          String         @id @default(uuid())
+  lessons     Lesson[]
+  status      MuxVideoStatus
+  playbackId  String?
+  assetId     String?
+  duration    Float?
+  aspectRatio String?
+}
+
+enum MuxVideoStatus {
+  WAITING
+  READY
 }

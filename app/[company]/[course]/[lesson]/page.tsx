@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { formattedDurationEstimate } from "@/lib/duration-estimator";
 import { PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
 import {
@@ -13,19 +14,35 @@ import { VideoPlayer } from "./VideoPlayer";
 
 export default async function LessonPage({ params }: PageProps) {
   const lessonId = params!.lesson!;
-  const lesson = await db.lesson.findUnique({ where: { id: lessonId } });
+  const lesson = await db.lesson.findUnique({
+    where: { id: lessonId },
+    include: { mainVideo: true, userInteractions: true },
+  });
   if (!lesson) throw Error("404 - Lesson not found");
+
+  const [w, h] = lesson.mainVideo?.aspectRatio
+    ?.split(":")
+    .map((n) => Number(n)) || [16, 9];
+  const aspectRatio = w / h;
+
   return (
     <div className="p-8 flex flex-col gap-4 h-screen max-w-6xl m-auto">
       <div className="flex-1 flex flex-col gap-4 overflow-auto">
-        <div className="w-full rounded-2xl overflow-hidden bg-black aspect-video self-center shrink-0">
-          <VideoPlayer />
-        </div>
+        {lesson.mainVideo && lesson.mainVideo.playbackId ? (
+          <div
+            className="w-full rounded-2xl overflow-hidden bg-black self-center shrink-0"
+            style={{ aspectRatio }}
+          >
+            <VideoPlayer playbackId={lesson.mainVideo.playbackId} />
+          </div>
+        ) : null}
         <div className="flex items-center justify-between">
           <h1 className="font-bold text-2xl">{lesson.title}</h1>
           <div className="flex items-center">
             <FontAwesomeIcon icon={faClock} className="text-neutral-500" />
-            <span className="ml-2 text-neutral-500">XX Minutes</span>
+            <span className="ml-2 text-neutral-500">
+              {formattedDurationEstimate(lesson)}
+            </span>
           </div>
         </div>
         <div className="text-neutral-900 flex-1 flex flex-col gap-3">

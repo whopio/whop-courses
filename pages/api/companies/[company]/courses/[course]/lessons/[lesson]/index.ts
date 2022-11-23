@@ -17,6 +17,7 @@ const EditLessonSchema = z
   .object({
     title: z.string(),
     description: z.string(),
+    videoId: z.string().nullable(),
   })
   .partial();
 
@@ -28,6 +29,7 @@ const handler = API.withContext(
     data: {
       title: data.title,
       description: data.description,
+      mainVideoId: data.videoId,
     },
   });
 });
