@@ -79,7 +79,7 @@ export const VideoDropzone: FC<{
     async (file: File) => {
       setUploadProgress(0);
       setIsUploading(true);
-      console.log(file);
+      if (videoId) await deleteVideo(companyId, videoId);
 
       const uploadUrl = await getUploadUrl(companyId);
       setVideoId(uploadUrl.dbId);
@@ -109,7 +109,7 @@ export const VideoDropzone: FC<{
         setIsUploading(false);
       });
     },
-    [companyId, setVideoId]
+    [companyId, setVideoId, videoId]
   );
 
   async function removeVideo() {
