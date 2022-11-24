@@ -18,9 +18,8 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
   });
 
   return (
-    <div className="flex flex-col gap-4 p-4 m-auto max-w-6xl">
+    <div className="flex flex-col gap-4 p-4 m-auto max-w-6xl pt-6">
       <h1 className="text-2xl font-bold">Courses</h1>
-      <p className="">{company.description || company.shortened_description}</p>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span>Filter:</span>

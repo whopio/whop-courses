@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { formattedDurationEstimate } from "@/lib/duration-estimator";
 import { getCompany } from "@/lib/server/get-company";
 import { getUser } from "@/lib/server/get-user";
 import { blurDataURL, PageProps } from "@/lib/util";
@@ -17,13 +18,13 @@ export default async function CompanyPage({ params }: PageProps) {
       chapters: {
         include: {
           lessons: {
-            where: {
+            include: {
               userInteractions: {
-                some: {
-                  status: "COMPLETED",
+                where: {
                   userId: user.id,
                 },
               },
+              mainVideo: true,
             },
           },
         },
@@ -31,12 +32,17 @@ export default async function CompanyPage({ params }: PageProps) {
     },
   });
 
-  const startedCourses = courses.filter((course) =>
-    course.chapters.some((chapter) => chapter.lessons.length > 0)
-  );
-  const notStartedCourses = courses.filter(
-    (course) => !course.chapters.some((chapter) => chapter.lessons.length > 0)
-  );
+  const isStarted = (course: typeof courses[number]) =>
+    course.chapters.some((chapter) =>
+      chapter.lessons.some(
+        (lesson) =>
+          lesson.userInteractions.length > 0 &&
+          lesson.userInteractions[0].status === "COMPLETED"
+      )
+    );
+
+  const startedCourses = courses.filter(isStarted);
+  const notStartedCourses = courses.filter((c) => !isStarted(c));
 
   return (
     <div className="p-8 flex flex-col gap-6 m-auto max-w-7xl">
@@ -64,27 +70,31 @@ export default async function CompanyPage({ params }: PageProps) {
                 courseId={course.id}
                 image={course.coverImage || "/images/placeholder.png"}
                 title={course.title}
-                subtitle={"Todo, workout text"}
+                subtitle={formattedDurationEstimate(course)}
               />
             ))}
           </div>
         </>
       )}
-      <h3 className="text-xl font-bold">
-        {startedCourses.length > 0 ? "Other Courses" : "Courses"}
-      </h3>
-      <div className="flex flex-wrap gap-4">
-        {notStartedCourses.map((course) => (
-          <CourseCard
-            key={course.id}
-            companyId={company.route}
-            courseId={course.id}
-            image={course.coverImage || "/images/placeholder.png"}
-            title={course.title}
-            subtitle={"xxx Minutes"}
-          />
-        ))}
-      </div>
+      {notStartedCourses.length > 0 && (
+        <>
+          <h3 className="text-xl font-bold">
+            {startedCourses.length > 0 ? "Other Courses" : "Courses"}
+          </h3>
+          <div className="flex flex-wrap gap-4">
+            {notStartedCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                companyId={company.route}
+                courseId={course.id}
+                image={course.coverImage || "/images/placeholder.png"}
+                title={course.title}
+                subtitle={formattedDurationEstimate(course)}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

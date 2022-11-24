@@ -1,6 +1,7 @@
 "use client";
 
 import { apiDelete, apiPost } from "@/lib/api/api-request";
+import { useSave } from "@/lib/hooks/use-save";
 import type { TGetCourse } from "@/lib/server/get-course";
 import { Button } from "@/ui/Button";
 import {
@@ -10,7 +11,7 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { APICourse } from "../../../../pages/api/companies/[company]/courses/[course]";
 import { APIChapter } from "../../../../pages/api/companies/[company]/courses/[course]/chapters";
 import { APILessons } from "../../../../pages/api/companies/[company]/courses/[course]/lessons";
@@ -69,12 +70,7 @@ export const CourseEditPage: FC<{
     }
   }, [title, image, description, structure, router, companyId, courseId]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!saved) save();
-    }, 5000);
-    return () => clearTimeout(timeout);
-  }, [save, saved]);
+  useSave(save);
 
   async function createChapter() {
     setLoadingNewChapter(true);
@@ -93,22 +89,6 @@ export const CourseEditPage: FC<{
       { chapterId }
     );
     router.refresh();
-    setStructure((s) =>
-      s.map((c) =>
-        c.id === chapterId
-          ? {
-              ...c,
-              lessons: [
-                ...c.lessons,
-                {
-                  id: lesson.id,
-                  title: lesson.title,
-                },
-              ],
-            }
-          : c
-      )
-    );
     router.push(`/${companyRoute}/admin/${courseId}/${lesson.id}`);
   }
 
@@ -173,7 +153,12 @@ export const CourseEditPage: FC<{
         </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">
-        <Button color="danger" iconLeft={faTrashCan} onClick={deleteCourse}>
+        <Button
+          color="danger"
+          iconLeft={faTrashCan}
+          onClick={deleteCourse}
+          loading={loadingDelete}
+        >
           Delete
         </Button>
         <div className="flex-1"></div>

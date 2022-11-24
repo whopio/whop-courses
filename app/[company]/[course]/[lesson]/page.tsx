@@ -1,24 +1,64 @@
-import { db } from "@/lib/db";
-import { formattedDurationEstimate } from "@/lib/duration-estimator";
+import {
+  estimateChapterDuration,
+  estimateLessonDuration,
+  formattedDurationEstimate,
+} from "@/lib/duration-estimator";
+import { getCompany } from "@/lib/server/get-company";
+import { getCourse } from "@/lib/server/get-course";
+import { getUser } from "@/lib/server/get-user";
 import { PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
 import {
   faArrowCircleLeft,
   faArrowCircleRight,
-  faCheckCircle,
   faClock,
-  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import invariant from "tiny-invariant";
+import { CompletionButton } from "./CompletionButton";
+import { LikeButton } from "./LikeButton";
 import { VideoPlayer } from "./VideoPlayer";
 
 export default async function LessonPage({ params }: PageProps) {
   const lessonId = params!.lesson!;
-  const lesson = await db.lesson.findUnique({
-    where: { id: lessonId },
-    include: { mainVideo: true, userInteractions: true },
-  });
-  if (!lesson) throw Error("404 - Lesson not found");
+  const user = await getUser();
+  const company = await getCompany(params!.company!);
+  const course = await getCourse(params!.course, user.id);
+
+  let lesson, chapter, prevLesson, nextLesson;
+  for (let i = 0; i < course.chapters.length; i++) {
+    const c = course.chapters[i];
+    for (let j = 0; j < c.lessons.length; j++) {
+      const l = c.lessons[j];
+      if (l.id === lessonId) {
+        lesson = l;
+        chapter = c;
+        prevLesson =
+          c.lessons[j - 1] || course.chapters[i - 1]?.lessons.slice(-1)[0];
+        nextLesson = c.lessons[j + 1] || course.chapters[i + 1]?.lessons[0];
+      }
+    }
+  }
+
+  invariant(lesson, "404 - Lesson not found");
+  invariant(chapter, "404 - Lesson not found");
+
+  const chapterDuration = estimateChapterDuration(chapter);
+  const completedChapterDuration = chapter.lessons.reduce(
+    (duration, l) =>
+      l.userInteractions.find(
+        (i) => i.status === "COMPLETED" && i.userId === user.id
+      )
+        ? estimateLessonDuration(l) + duration
+        : duration,
+    0
+  );
+
+  const percentComplete = Math.round(
+    (completedChapterDuration / chapterDuration) * 100
+  );
+
+  const interaction = lesson.userInteractions.find((i) => i.userId === user.id);
 
   const [w, h] = lesson.mainVideo?.aspectRatio
     ?.split(":")
@@ -33,7 +73,13 @@ export default async function LessonPage({ params }: PageProps) {
             className="w-full rounded-2xl overflow-hidden bg-black self-center shrink-0"
             style={{ aspectRatio }}
           >
-            <VideoPlayer playbackId={lesson.mainVideo.playbackId} />
+            <VideoPlayer
+              playbackId={lesson.mainVideo.playbackId}
+              completeOnFinish
+              companyId={company.tag}
+              courseId={course.id}
+              lessonId={lesson.id}
+            />
           </div>
         ) : null}
         <div className="flex items-center justify-between">
@@ -49,31 +95,65 @@ export default async function LessonPage({ params }: PageProps) {
           <p className=" whitespace-pre-line">{lesson.description}</p>
         </div>
         <div className="flex justify-end gap-2 p-2">
-          <Button variant="outline" color="success" iconLeft={faCheckCircle}>
-            Marked as Completed
-          </Button>
-          <Button variant="outline" color="accent" iconLeft={faStar}>
-            Marked as Favourite
-          </Button>
+          <CompletionButton
+            companyId={company.tag}
+            courseId={course.id}
+            lessonId={lesson.id}
+            initialValue={interaction?.status === "COMPLETED"}
+          />
+          <LikeButton
+            companyId={company.tag}
+            courseId={course.id}
+            lessonId={lesson.id}
+            initialValue={interaction?.liked ?? false}
+          />
         </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">
-        <div className="w-48 flex flex-col gap-1">
-          <span className="font-bold text">70% Completed</span>
-          <div className="rounded-full h-2 bg-neutral-400 w-full">
-            <div className="h-full w-32 bg-emerald-500 rounded-full"></div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="inline-block rounded bg-neutral-200 px-1.5 py-0.5 text-sm font-semibold">
+              {chapter.title}
+            </div>
+            <div className="font-semibold text-sm">
+              {percentComplete}% Completed
+            </div>
+          </div>
+          <div className="rounded-full h-2 bg-neutral-300 w-48">
+            <div
+              className="h-full bg-emerald-500 rounded-full"
+              style={{ width: `${percentComplete}%` }}
+            ></div>
           </div>
         </div>
         <div className="flex-1 text-right">
-          <span className="font-semibold">
-            <span className="text-neutral-600">Next Lesson: </span>
-            Pellentesque scelerisque consequat
-          </span>
+          {nextLesson ? (
+            <span className="font-semibold">
+              <span className="text-neutral-600">Next Lesson: </span>
+              {nextLesson.title}
+            </span>
+          ) : null}
         </div>
-        <Button iconLeft={faArrowCircleLeft}>Back</Button>
-        <Button variant="filled" color="accent" iconRight={faArrowCircleRight}>
-          Next
-        </Button>
+        {prevLesson ? (
+          <Button
+            iconLeft={faArrowCircleLeft}
+            link
+            href={`/${company.route}/${course.id}/${prevLesson.id}`}
+          >
+            Back
+          </Button>
+        ) : null}{" "}
+        {nextLesson ? (
+          <Button
+            variant="filled"
+            color="accent"
+            iconRight={faArrowCircleRight}
+            link
+            href={`/${company.route}/${course.id}/${nextLesson.id}`}
+          >
+            Next
+          </Button>
+        ) : null}
       </div>
     </div>
   );

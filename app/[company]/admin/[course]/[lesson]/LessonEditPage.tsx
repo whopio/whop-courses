@@ -1,13 +1,14 @@
 "use client";
 
 import { apiPost } from "@/lib/api/api-request";
+import { useSave } from "@/lib/hooks/use-save";
 import type { TGetCourse } from "@/lib/server/get-course";
 import { Button } from "@/ui/Button";
 import { TextArea, TextInput } from "@/ui/TextInput";
 import { getVideoPromise, usePromise, VideoDropzone } from "@/ui/VideoDropzone";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { APILesson } from "../../../../../pages/api/companies/[company]/courses/[course]/lessons/[lesson]";
 import { VideoPlayer } from "../../../[course]/[lesson]/VideoPlayer";
 
@@ -31,7 +32,7 @@ export const LessonEditPage: FC<{
     description === lesson.description &&
     videoId === lesson.mainVideoId;
 
-  async function save() {
+  const save = useCallback(async () => {
     if (saved) return;
     setLoading(true);
     await apiPost<APILesson>(
@@ -40,7 +41,18 @@ export const LessonEditPage: FC<{
     );
     router.refresh();
     setLoading(false);
-  }
+  }, [
+    saved,
+    router,
+    companyId,
+    courseId,
+    lessonId,
+    description,
+    title,
+    videoId,
+  ]);
+
+  useSave(save);
 
   const [w, h] = videoData?.aspectRatio.split(":").map((n) => Number(n)) || [
     16, 9,
@@ -83,7 +95,10 @@ export const LessonEditPage: FC<{
             style={{ aspectRatio }}
           >
             {videoData ? (
-              <VideoPlayer playbackId={videoData.playbackId} />
+              <VideoPlayer
+                playbackId={videoData.playbackId}
+                completeOnFinish={false}
+              />
             ) : (
               <div className="flex items-center justify-center bg-neutral-100 p-4 rounded-lg border-2 border-neutral-200 w-full h-full">
                 <span className="text-neutral-400 text-lg">

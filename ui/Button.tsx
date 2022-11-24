@@ -18,7 +18,8 @@ export const buttonCompoundVariants: {
   {
     variant: "light",
     color: "danger",
-    class: "bg-red-200 hover:bg-red-300 text-red-700 hover:text-red-800",
+    class:
+      "border-2 border-red-200 hover:border-red-300 bg-red-200 hover:bg-red-300 text-red-700 hover:text-red-800",
   },
   {
     variant: "outline",
@@ -29,13 +30,14 @@ export const buttonCompoundVariants: {
   {
     variant: "filled",
     color: "danger",
-    class: "bg-red-500 hover:bg-red-600",
+    class:
+      "border-2 border-red-500 hover:border-red-600 bg-red-500 hover:bg-red-600",
   },
   {
     variant: "light",
     color: "success",
     class:
-      "bg-emerald-200 hover:bg-emerald-300 text-emerald-700 hover:text-emerald-800",
+      "border-2 border-emerald-200 hover:border-emerald-300 bg-emerald-200 hover:bg-emerald-300 text-emerald-700 hover:text-emerald-800",
   },
   {
     variant: "outline",
@@ -46,13 +48,14 @@ export const buttonCompoundVariants: {
   {
     variant: "filled",
     color: "success",
-    class: "bg-emerald-500 hover:bg-emerald-600",
+    class:
+      "border-2 border-emerald-500 hover:border-emerald-600 bg-emerald-500 hover:bg-emerald-600",
   },
   {
     variant: "light",
     color: "primary",
     class:
-      "bg-primary-200 hover:bg-primary-300 text-primary-700 hover:text-primary-800",
+      "border-2 border-primary-200 hover:border-primary-300 bg-primary-200 hover:bg-primary-300 text-primary-700 hover:text-primary-800",
   },
   {
     variant: "outline",
@@ -63,13 +66,14 @@ export const buttonCompoundVariants: {
   {
     variant: "filled",
     color: "primary",
-    class: "bg-primary-500 hover:bg-primary-600",
+    class:
+      "border-2 border-primary-500 hover:border-primary-600 bg-primary-500 hover:bg-primary-600",
   },
   {
     variant: "light",
     color: "neutral",
     class:
-      "bg-neutral-200 hover:bg-neutral-300 text-neutral-800 hover:text-neutral-900",
+      "border-2 border-neutral-200 hover:border-neutral-300 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 hover:text-neutral-900",
   },
   {
     variant: "outline",
@@ -80,13 +84,14 @@ export const buttonCompoundVariants: {
   {
     variant: "filled",
     color: "neutral",
-    class: "bg-neutral-800 hover:bg-neutral-700 text-white",
+    class:
+      "border-2 border-neutral-800 hover:border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white",
   },
   {
     variant: "light",
     color: "accent",
     class:
-      "bg-accent-200 hover:bg-accent-300 text-accent-700 hover:text-accent-800",
+      "border-2 border-accent-200 hover:border-accent-300 bg-accent-200 hover:bg-accent-300 text-accent-700 hover:text-accent-800",
   },
   {
     variant: "outline",
@@ -97,7 +102,8 @@ export const buttonCompoundVariants: {
   {
     variant: "filled",
     color: "accent",
-    class: "bg-accent-500 hover:bg-accent-600",
+    class:
+      "border-2 border-accent-500 hover:border-accent-600 bg-accent-500 hover:bg-accent-600",
   },
 ];
 

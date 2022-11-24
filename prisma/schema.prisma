@@ -27,13 +27,20 @@ model Company {
 }
 
 model Course {
-  id          String    @id @default(uuid())
+  id          String       @id @default(uuid())
   title       String
   description String
   coverImage  String?
-  company     Company   @relation(fields: [companyId], references: [id])
+  company     Company      @relation(fields: [companyId], references: [id])
   companyId   String
   chapters    Chapter[]
+  status      CourseStatus @default(DRAFT)
+  passes      String[]
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
 }
 
 enum ChapterStatus {
@@ -67,6 +74,7 @@ model Lesson {
   chapterId        String
   userInteractions UserLessonInteraction[]
   order            Int
+  duration         Int?
 
   @@unique([chapterId, order])
 }
@@ -85,6 +93,8 @@ model UserLessonInteraction {
   lessonId String
   status   UserLessonStatus
   liked    Boolean
+
+  @@unique([userId, lessonId])
 }
 
 model MuxVideo {

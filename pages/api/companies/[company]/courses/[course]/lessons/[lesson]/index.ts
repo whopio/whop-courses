@@ -2,16 +2,10 @@ import { API, APIType } from "@/lib/api/api";
 import {
   companyAdminUserContext,
   courseContext,
+  routeParam,
 } from "@/lib/api/context-functions";
 import { db } from "@/lib/db";
-import invariant from "tiny-invariant";
 import { z } from "zod";
-
-const lessonContext = API.contextFunction((req) => {
-  const lessonId = req.query.lesson;
-  invariant(typeof lessonId === "string", "Invalid company route");
-  return { lessonId };
-});
 
 const EditLessonSchema = z
   .object({
@@ -22,10 +16,10 @@ const EditLessonSchema = z
   .partial();
 
 const handler = API.withContext(
-  companyAdminUserContext.add(courseContext).add(lessonContext)
+  companyAdminUserContext.add(courseContext).add(routeParam("lesson"))
 ).zpost(EditLessonSchema, async (data, ctx) => {
   return await db.lesson.update({
-    where: { id: ctx.lessonId },
+    where: { id: ctx.lesson },
     data: {
       title: data.title,
       description: data.description,
