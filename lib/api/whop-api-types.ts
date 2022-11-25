@@ -33,4 +33,35 @@ export type WhopCompanyByRouteResponse = {
   shortened_description: string;
 };
 
+export type WhopAuthorizedUserResponse = {
+  role: string;
+  permission_level: number;
+  company: WhopCompanyResponse;
+}[];
+
+export type WhopUserMembershipResponse = {
+  id: string;
+  created_at: number;
+  access_pass: string;
+  user: string;
+  plan: string;
+  status:
+    | "drafted"
+    | "trialing"
+    | "active"
+    | "past_due"
+    | "completed"
+    | "canceled"
+    | "expired"
+    | "unresolved";
+  license_key: string;
+  metadata: object;
+  valid: boolean;
+  quantity: number;
+  renewal_period_start: number;
+  renewal_period_end: number;
+  wallet_address: string;
+  custom_fields_responses: object;
+}[];
+
 export type WhopUserCompanies = WhopCompanyResponse[];

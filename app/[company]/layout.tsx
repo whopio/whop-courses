@@ -1,9 +1,9 @@
+import { isUserAdmin } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
 import { getUser } from "@/lib/server/get-user";
 import { blurDataURL, LayoutProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
-import { IconButton } from "@/ui/IconButton";
 import {
   faArrowRightFromBracket,
   faCaretDown,
@@ -25,6 +25,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
       status: "PUBLISHED",
     },
   });
+  const isAdmin = await isUserAdmin(user.whopAccessToken, company.tag);
 
   return (
     <div className="flex h-screen flex-nowrap items-stretch justify-start">
@@ -69,17 +70,17 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
             <h3 className="text-md font-semibold text-white">
               {user.username}
             </h3>
-            <span className="text-xs text-slate-400">Tier 2 Access Pass</span>
+            {/* <span className="text-xs text-slate-400">Tier 2 Access Pass</span> */}
           </div>
 
-          <IconButton
+          {/* <IconButton
             link
             href="/api/auth/logout"
             variant="outline"
             color="danger"
             size="sm"
             icon={faArrowRightFromBracket}
-          />
+          /> */}
         </div>
         <div className="flex flex-col gap-2">
           <div className="font-bold text-white">Courses</div>
@@ -92,15 +93,17 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
             />
           ))}
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="font-bold text-white">Admin</div>
-          <CourseSidebarButton
-            route="admin"
-            companyRoute={params!.company}
-            text="Manage Courses"
-            icon={faGear}
-          />
-        </div>
+        {isAdmin && (
+          <div className="flex flex-col gap-2">
+            <div className="font-bold text-white">Admin</div>
+            <CourseSidebarButton
+              route="admin"
+              companyRoute={params!.company}
+              text="Manage Courses"
+              icon={faGear}
+            />
+          </div>
+        )}
         <div className="flex-1"></div>
         <Button
           link

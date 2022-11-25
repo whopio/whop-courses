@@ -1,8 +1,10 @@
 import {
+  WhopAuthorizedUserResponse,
   WhopCompanyByRouteResponse,
   WhopCompanyResponse,
   WhopMeResponse,
   WhopUserCompanies,
+  WhopUserMembershipResponse,
 } from "./whop-api-types";
 
 export type WhopApiOptions = {
@@ -62,4 +64,28 @@ export async function getUserCompanies(accessToken: string) {
     accessToken,
   });
   return res.data as WhopUserCompanies;
+}
+
+export async function getAuthorizedUsers(accessToken: string) {
+  const res = await whopApi({
+    path: "/v2/me/authorized_users",
+    accessToken,
+  });
+  return res.data as WhopAuthorizedUserResponse;
+}
+
+export async function isUserAdmin(accessToken: string, companyId: string) {
+  const companies = await getAuthorizedUsers(accessToken);
+  console.log(companies);
+  const perms = companies.find((c) => c.company.id === companyId);
+  const isCompanyAdmin = perms && perms.permission_level <= 1;
+  return !!isCompanyAdmin;
+}
+
+export async function getUserMemberships(accessToken: string) {
+  const res = await whopApi({
+    path: "/v2/me/memberships",
+    accessToken,
+  });
+  return res.data as WhopUserMembershipResponse;
 }

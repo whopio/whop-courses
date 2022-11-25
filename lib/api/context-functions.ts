@@ -4,7 +4,7 @@ import { API } from "./api";
 import { parseUserSession } from "./auth";
 import { parseTokenCookie } from "./cookie";
 import { UserSession } from "./session";
-import { getCompany } from "./whop-api";
+import { getCompany, isUserAdmin } from "./whop-api";
 
 export function routeParam<Param extends string>(param: Param, name?: string) {
   return API.contextFunction(async (req, res) => {
@@ -62,10 +62,8 @@ export const userContext = sessionContext.add(
 
 export const companyAdminUserContext = userContext.add(companyContext).add(
   API.contextFunction(async (req, res, ctx) => {
-    // TODO wite this
-    const isCompanyAdmin = true;
-
-    if (!isCompanyAdmin) {
+    const isAdmin = await isUserAdmin(ctx.user.whopAccessToken, ctx.company.id);
+    if (!isAdmin) {
       res.status(403);
       throw Error("Not authorized");
     }

@@ -1,6 +1,10 @@
 import { API } from "@/lib/api/api";
 import { createTokenCookie } from "@/lib/api/cookie";
-import { getMe, getUserCompanies } from "@/lib/api/whop-api";
+import {
+  getMe,
+  getUserCompanies,
+  getUserMemberships,
+} from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import invariant from "tiny-invariant";
 import { UserSession } from "../../../lib/api/session";
@@ -10,6 +14,13 @@ export default API.noContext().get(async (req, res) => {
   const { code, state } = req.query;
   invariant(typeof code === "string", "Invalid code");
   const tokens = await codeToAccessToken(code);
+
+  const memberships = await getUserMemberships(tokens.access_token);
+  invariant(
+    memberships.some((m) => m.valid),
+    "You don't have a valid membership"
+  );
+
   const me = await getMe(tokens.access_token);
 
   const user = await db.user.upsert({
