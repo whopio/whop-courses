@@ -14,6 +14,7 @@ const EditCourseSchema = z
     title: z.string(),
     description: z.string(),
     image: z.string().nullable(),
+    visibility: z.enum(["DRAFT", "PUBLISHED"]),
     structure: z
       .object({
         id: z.string(),
@@ -77,6 +78,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
         coverImage: data.image,
         description: data.description,
         title: data.title,
+        status: data.visibility,
       },
     });
 

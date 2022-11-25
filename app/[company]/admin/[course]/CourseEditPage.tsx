@@ -46,11 +46,13 @@ export const CourseEditPage: FC<{
   const [image, setImage] = useState<string | null>(course.coverImage);
   const [title, setTitle] = useState(course.title);
   const [description, setDescription] = useState(course.description);
+  const [visibility, setVisibility] = useState(course.status);
 
   const saved =
     image === course.coverImage &&
     title === course.title &&
     description === course.description &&
+    visibility === course.status &&
     structureSaved(course, structure);
 
   const save = useCallback(async () => {
@@ -61,6 +63,7 @@ export const CourseEditPage: FC<{
         image,
         title,
         structure,
+        visibility,
       });
       router.refresh();
     } catch (error) {
@@ -68,7 +71,16 @@ export const CourseEditPage: FC<{
     } finally {
       setLoading(false);
     }
-  }, [title, image, description, structure, router, companyId, courseId]);
+  }, [
+    title,
+    image,
+    description,
+    structure,
+    router,
+    companyId,
+    courseId,
+    visibility,
+  ]);
 
   useSave(save);
 
@@ -122,6 +134,8 @@ export const CourseEditPage: FC<{
             setDescription={setDescription}
             setImage={setImage}
             setTitle={setTitle}
+            visibility={visibility}
+            setVisibility={setVisibility}
           />
         </div>
         <div className="flex-1 overflow-auto shrink-0 pl-4 gap-4 flex flex-col">

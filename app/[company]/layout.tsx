@@ -22,6 +22,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
   const courses = await db.course.findMany({
     where: {
       companyId: company.tag,
+      status: "PUBLISHED",
     },
   });
 

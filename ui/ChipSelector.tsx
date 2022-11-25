@@ -14,20 +14,22 @@ const optionClasses = cva(
 );
 
 export const ChipSelector: FC<{
-  options: string[];
+  options: (string | { value: string; label: string })[];
   selected: string;
   onSelect: (option: string) => void;
 }> = ({ onSelect, options, selected }) => {
   return (
     <div className="flex items-center gap-2">
       {options.map((option) => {
+        const value = typeof option === "string" ? option : option.value;
+        const label = typeof option === "string" ? option : option.label;
         return (
           <div
-            key={option}
-            onClick={() => onSelect(option)}
-            className={optionClasses({ active: option === selected })}
+            key={value}
+            onClick={() => onSelect(value)}
+            className={optionClasses({ active: value === selected })}
           >
-            {option}
+            {label}
           </div>
         );
       })}

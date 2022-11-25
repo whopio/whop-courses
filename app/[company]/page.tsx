@@ -13,6 +13,7 @@ export default async function CompanyPage({ params }: PageProps) {
   const courses = await db.course.findMany({
     where: {
       companyId: company.tag,
+      status: "PUBLISHED",
     },
     include: {
       chapters: {

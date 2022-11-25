@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
 import { blurDataURL, PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
-import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck, faClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,10 +10,24 @@ import { CreateCourseButton } from "./CreateCourseButton";
 
 export default async function AdminHome({ params, searchParams }: PageProps) {
   const company = await getCompany(params!.company);
-  const filter = searchParams?.filter;
+  const filter =
+    searchParams?.filter === "published"
+      ? "PUBLISHED"
+      : searchParams?.filter === "draft"
+      ? "DRAFT"
+      : undefined;
+
   const courses = await db.course.findMany({
     where: {
       companyId: company.tag,
+      status: filter,
+    },
+    include: {
+      _count: {
+        select: {
+          chapters: true,
+        },
+      },
     },
   });
 
@@ -23,10 +37,26 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span>Filter:</span>
-          <Button link href={`/${company.route}/admin?filter=published`}>
+          <Button
+            link
+            variant={filter === "PUBLISHED" ? "filled" : "light"}
+            href={
+              filter === "PUBLISHED"
+                ? `/${company.route}/admin`
+                : `/${company.route}/admin?filter=published`
+            }
+          >
             Published
           </Button>
-          <Button link href={`/${company.route}/admin?filter=draft`}>
+          <Button
+            link
+            variant={filter === "DRAFT" ? "filled" : "light"}
+            href={
+              filter === "DRAFT"
+                ? `/${company.route}/admin`
+                : `/${company.route}/admin?filter=draft`
+            }
+          >
             Draft
           </Button>
         </div>
@@ -64,7 +94,7 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
                     <div className="text-left group-hover:underline">
                       <h2 className="font-bold">{course.title}</h2>
                       <p className="text-neutral-600">
-                        Created on the 30th of February
+                        {course._count.chapters} Chapters
                       </p>
                     </div>
                   </div>
@@ -75,13 +105,20 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
                   An Access Pass
                 </span>
               </td>
-              <td className="py-4">
-                <FontAwesomeIcon
-                  icon={faCircleCheck}
-                  className="text-emerald-500"
-                />
-                <span> Published</span>
-              </td>
+              {course.status === "PUBLISHED" ? (
+                <td className="py-4">
+                  <FontAwesomeIcon
+                    icon={faCircleCheck}
+                    className="text-emerald-500"
+                  />
+                  <span> Published</span>
+                </td>
+              ) : (
+                <td className="py-4">
+                  <FontAwesomeIcon icon={faClock} className="text-accent-500" />
+                  <span className="text-neutral-600"> Draft</span>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

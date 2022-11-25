@@ -6,17 +6,12 @@ import {
 import { getCourse } from "@/lib/server/get-course";
 import { getUser } from "@/lib/server/get-user";
 import { LayoutProps } from "@/lib/util";
-import {
-  faCircleCheck,
-  faCirclePlay,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
+import { LessonSidebarButton } from "./LessonSidebarButton";
 
 export default async function Layout({ children, params }: LayoutProps) {
-  const courseId = params?.course;
-  const companyId = params?.company;
+  const courseId = params!.course;
+  const companyId = params!.company;
   const user = await getUser();
   const course = await getCourse(courseId!, user.id);
 
@@ -62,31 +57,12 @@ export default async function Layout({ children, params }: LayoutProps) {
               </span>
             </div>
             {chapter.lessons.map((lesson) => (
-              <Link
+              <LessonSidebarButton
                 key={lesson.id}
-                href={`/${companyId}/${courseId}/${lesson.id}`}
-              >
-                <div className="p-2 transition hover:bg-slate-200 rounded-lg cursor-pointer flex items-start text-slate-600 justify-between gap-2">
-                  {lesson.userInteractions[0]?.status === "COMPLETED" ? (
-                    <FontAwesomeIcon
-                      icon={faCircleCheck}
-                      className="text-emerald-500 my-1"
-                    />
-                  ) : (
-                    <FontAwesomeIcon
-                      icon={faCirclePlay}
-                      className="text-slate-500 my-1"
-                    />
-                  )}
-                  <span className="flex-1">{lesson.title}</span>
-                  {lesson.userInteractions[0]?.liked && (
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      className="text-amber-500 my-1"
-                    />
-                  )}
-                </div>
-              </Link>
+                courseId={courseId}
+                companyId={companyId}
+                lesson={lesson}
+              />
             ))}
           </div>
         ))}
