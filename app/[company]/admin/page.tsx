@@ -69,7 +69,7 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
         <thead>
           <tr>
             <th>Course</th>
-            <th>Requirements</th>
+            {/* <th>Requirements</th> */}
             <th>Status</th>
           </tr>
         </thead>
@@ -100,11 +100,11 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
                   </div>
                 </Link>
               </td>
-              <td className="py-4">
+              {/* <td className="py-4">
                 <span className="inline-block py-1 px-2 bg-neutral-200 rounded text-sm font-semibold">
                   An Access Pass
                 </span>
-              </td>
+              </td> */}
               {course.status === "PUBLISHED" ? (
                 <td className="py-4">
                   <FontAwesomeIcon

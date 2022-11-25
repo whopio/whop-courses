@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import { FC } from "react";
 
 export const LessonSidebarButton: FC<{
@@ -17,9 +17,8 @@ export const LessonSidebarButton: FC<{
   courseId: string;
   lesson: TGetCourse["chapters"][number]["lessons"][number];
 }> = ({ companyId, courseId, lesson }) => {
-  const pathname = usePathname();
-  const parts = pathname?.split("/") || [];
-  const isActive = parts[3] === lesson.id;
+  const segment = useSelectedLayoutSegment();
+  const isActive = segment === lesson.id;
   return (
     <Link href={`/${companyId}/${courseId}/${lesson.id}`}>
       <div

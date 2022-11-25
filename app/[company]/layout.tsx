@@ -8,12 +8,12 @@ import {
   faArrowRightFromBracket,
   faCaretDown,
   faGear,
-  faLinesLeaning,
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
+import { CourseSidebarButton } from "./CourseSidebarButton";
 
 export default async function CompanyLayout({ children, params }: LayoutProps) {
   const company = await getCompany(params!.company);
@@ -84,33 +84,22 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
         <div className="flex flex-col gap-2">
           <div className="font-bold text-white">Courses</div>
           {courses.map((course) => (
-            <Link
+            <CourseSidebarButton
               key={course.id}
-              href={`/${params!.company}/${course.id}`}
-              className={
-                "  p-4 rounded-lg flex items-center text-slate-300 transition" +
-                (course.id === params!.course
-                  ? " bg-slate-800 hover:bg-slate-700"
-                  : " hover:bg-slate-800")
-              }
-            >
-              <FontAwesomeIcon icon={faLinesLeaning} className="w-10" />
-              <span>{course.title}</span>
-            </Link>
+              companyRoute={params!.company}
+              text={course.title}
+              route={course.id}
+            />
           ))}
         </div>
         <div className="flex flex-col gap-2">
           <div className="font-bold text-white">Admin</div>
-
-          <Link
-            href={`/${params!.company}/admin`}
-            className={
-              "p-4 rounded-lg flex items-center text-slate-300 transition hover:bg-slate-800"
-            }
-          >
-            <FontAwesomeIcon icon={faGear} className="w-10" />
-            <span>Manage Courses</span>
-          </Link>
+          <CourseSidebarButton
+            route="admin"
+            companyRoute={params!.company}
+            text="Manage Courses"
+            icon={faGear}
+          />
         </div>
         <div className="flex-1"></div>
         <Button
