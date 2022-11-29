@@ -42,7 +42,19 @@ export default async function CompanyPage({ params }: PageProps) {
       )
     );
 
-  const startedCourses = courses.filter(isStarted);
+  const isCompleted = (course: typeof courses[number]) =>
+    course.chapters.every((chapter) =>
+      chapter.lessons.every(
+        (lesson) =>
+          lesson.userInteractions.length > 0 &&
+          lesson.userInteractions[0].status === "COMPLETED"
+      )
+    );
+
+  const startedCourses = courses
+    .filter(isStarted)
+    .filter((c) => !isCompleted(c));
+  const completedCourses = courses.filter(isCompleted);
   const notStartedCourses = courses.filter((c) => !isStarted(c));
 
   return (
@@ -84,6 +96,23 @@ export default async function CompanyPage({ params }: PageProps) {
           </h3>
           <div className="flex flex-wrap gap-4">
             {notStartedCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                companyId={company.route}
+                courseId={course.id}
+                image={course.coverImage || "/images/placeholder.png"}
+                title={course.title}
+                subtitle={formattedDurationEstimate(course)}
+              />
+            ))}
+          </div>
+        </>
+      )}
+      {completedCourses.length > 0 && (
+        <>
+          <h3 className="text-xl font-bold">Your Completed Courses</h3>
+          <div className="flex flex-wrap gap-4">
+            {completedCourses.map((course) => (
               <CourseCard
                 key={course.id}
                 companyId={company.route}

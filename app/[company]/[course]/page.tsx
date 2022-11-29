@@ -25,7 +25,9 @@ export default async function CourseIndexPage({ params }: PageProps) {
           (i) => i.userId === user.id && i.status === "COMPLETED"
         )
     );
-  const nextLesson = uncompletedLessons[0];
+  const nextLesson =
+    uncompletedLessons.length === 0 ? firstLesson : uncompletedLessons[0];
+
   const isBeginCourse = firstLesson?.id === nextLesson?.id;
 
   const completedLessons = course.chapters

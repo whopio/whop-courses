@@ -6,7 +6,7 @@ import { Button } from "@/ui/Button";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { CourseEditPage } from "./CourseEditPage";
 
-export default async function CourseIndexPage({ params }: PageProps) {
+export default async function AdminCourseIndexPage({ params }: PageProps) {
   const courseId = params?.course;
   const companyId = params?.company;
   const company = await getCompany(companyId!);

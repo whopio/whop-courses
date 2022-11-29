@@ -19,6 +19,8 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
   // Todo, figure out if the current user has access to these courses
   const user = await getUser();
   const companies = await getUserCompanies(user.whopAccessToken);
+  const isAllowed = companies.some((c) => c.id === company.tag);
+  if (!isAllowed) throw Error("You do not have permission to be on this page.");
   const courses = await db.course.findMany({
     where: {
       companyId: company.tag,
