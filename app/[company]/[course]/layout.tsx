@@ -10,6 +10,7 @@ import Link from "next/link";
 import { LessonSidebarButton } from "./LessonSidebarButton";
 
 export default async function Layout({ children, params }: LayoutProps) {
+  console.time("course.layout");
   const courseId = params!.course;
   const companyId = params!.company;
   const user = await getUser();
@@ -31,6 +32,7 @@ export default async function Layout({ children, params }: LayoutProps) {
     (completedDuration / totalDuration) * 100
   );
 
+  console.timeEnd("course.layout");
   return (
     <div className="flex h-screen items-stretch flex-nowrap">
       <div className="bg-slate-100 h-full overflow-auto w-96 p-2 flex flex-col items-stretch gap-6 shrink-0">

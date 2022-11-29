@@ -20,6 +20,7 @@ import { LikeButton } from "./LikeButton";
 import { VideoPlayer } from "./VideoPlayer";
 
 export default async function LessonPage({ params }: PageProps) {
+  console.time("lesson.page");
   const lessonId = params!.lesson!;
   const user = await getUser();
   const company = await getCompany(params!.company!);
@@ -64,6 +65,7 @@ export default async function LessonPage({ params }: PageProps) {
     ?.split(":")
     .map((n) => Number(n)) || [16, 9];
   const aspectRatio = w / h;
+  console.timeEnd("lesson.page");
 
   return (
     <div className="p-8 flex flex-col gap-4 h-screen max-w-6xl m-auto">

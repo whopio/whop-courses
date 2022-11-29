@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 
 export default async function CourseIndexPage({ params }: PageProps) {
+  console.time("course.page");
   const courseId = params?.course;
   const companyId = params?.company;
   const user = await getUser();
@@ -45,6 +46,7 @@ export default async function CourseIndexPage({ params }: PageProps) {
   const percentageComplete = Math.round(
     (completedDuration / totalDuration) * 100
   );
+  console.timeEnd("course.page");
 
   return (
     <div className="p-8 flex flex-col gap-6 h-screen m-auto max-w-6xl">

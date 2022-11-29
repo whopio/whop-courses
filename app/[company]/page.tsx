@@ -8,6 +8,7 @@ import Link from "next/link";
 import { FC } from "react";
 
 export default async function CompanyPage({ params }: PageProps) {
+  console.time("company.page");
   const company = await getCompany(params!.company);
   const user = await getUser();
   const courses = await db.course.findMany({
@@ -56,6 +57,7 @@ export default async function CompanyPage({ params }: PageProps) {
     .filter((c) => !isCompleted(c));
   const completedCourses = courses.filter(isCompleted);
   const notStartedCourses = courses.filter((c) => !isStarted(c));
+  console.timeEnd("company.page");
 
   return (
     <div className="p-8 flex flex-col gap-6 m-auto max-w-7xl">

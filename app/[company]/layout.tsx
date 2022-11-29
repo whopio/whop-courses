@@ -15,6 +15,7 @@ import { CompanySwitcherModal } from "./CompanySwitcherModal";
 import { CourseSidebarButton } from "./CourseSidebarButton";
 
 export default async function CompanyLayout({ children, params }: LayoutProps) {
+  console.time("company.layout");
   const company = await getCompany(params!.company);
   // Todo, figure out if the current user has access to these courses
   const user = await getUser();
@@ -28,6 +29,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
     },
   });
   const isAdmin = await isUserAdmin(user.whopAccessToken, company.tag);
+  console.timeEnd("company.layout");
 
   return (
     <div className="flex h-screen flex-nowrap items-stretch justify-start">
