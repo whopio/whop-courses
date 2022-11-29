@@ -17,7 +17,7 @@ export const CompanySwitcherModal: FC<{
   const selected = companies.find((c) => c.route === selectedRoute);
   if (!selected) return null;
   return (
-    <div className="relative z-20">
+    <div className="relative">
       <div className="group flex flex-row flex-nowrap items-center gap-2 bg-black rounded-lg p-3">
         <Image
           placeholder="blur"
@@ -42,7 +42,7 @@ export const CompanySwitcherModal: FC<{
       </div>
       <div
         className={`fixed top-0 left-0 right-0 bottom-0 transition ${
-          open ? "bg-black/50 z-10" : "bg-transparent -z-10 pointer-events-none"
+          open ? "" : "pointer-events-none"
         }`}
         onClick={() => setOpen(false)}
       ></div>

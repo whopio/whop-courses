@@ -40,7 +40,7 @@ export function estimateCourseDuration(course: DurationCourse) {
 }
 
 export function durationEstimate(
-  input: DurationLesson | DurationChapter | DurationChapter
+  input: DurationLesson | DurationChapter | DurationCourse
 ) {
   if ("lessons" in input) {
     return estimateChapterDuration(input);
@@ -51,7 +51,7 @@ export function durationEstimate(
   }
 }
 export function formattedDurationEstimate(
-  input: DurationLesson | DurationChapter | DurationChapter
+  input: DurationLesson | DurationChapter | DurationCourse
 ) {
   const totalMinutes = durationEstimate(input);
   const h = Math.floor(totalMinutes / 60);
