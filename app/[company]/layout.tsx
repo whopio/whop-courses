@@ -1,4 +1,4 @@
-import { isUserAdmin } from "@/lib/api/whop-api";
+import { getUserCompanies, isUserAdmin } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
 import { getUser } from "@/lib/server/get-user";
@@ -6,19 +6,19 @@ import { blurDataURL, LayoutProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
 import {
   faArrowRightFromBracket,
-  faCaretDown,
   faGear,
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import Link from "next/link";
+import { CompanySwitcherModal } from "./CompanySwitcherModal";
 import { CourseSidebarButton } from "./CourseSidebarButton";
 
 export default async function CompanyLayout({ children, params }: LayoutProps) {
   const company = await getCompany(params!.company);
   // Todo, figure out if the current user has access to these courses
   const user = await getUser();
+  const companies = await getUserCompanies(user.whopAccessToken);
   const courses = await db.course.findMany({
     where: {
       companyId: company.tag,
@@ -30,25 +30,10 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
   return (
     <div className="flex h-screen flex-nowrap items-stretch justify-start">
       <nav className="bg-neutral-900 flex flex-col gap-8 p-4 items-stretch w-80 shrink-0 overflow-auto">
-        <div className="group flex flex-row flex-nowrap items-center gap-2 bg-black rounded-lg p-3">
-          <Image
-            placeholder="blur"
-            blurDataURL={blurDataURL}
-            src={company.image_url}
-            alt="Company Image Title"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
-          <Link className="flex-1" href={`/${company.route}`}>
-            <h1 className="font-semibold text-md text-white group-hover:text-slate-300 transition-all select-none cursor-pointer">
-              {company.title}
-            </h1>
-          </Link>
-          <button className="text-slate-500 text-lg group-hover:bg-slate-900 w-8 h-8 rounded-full transition">
-            <FontAwesomeIcon icon={faCaretDown} />
-          </button>
-        </div>
+        <CompanySwitcherModal
+          companies={companies}
+          selectedRoute={params!.company}
+        />
 
         <div className="flex gap-2 items-center">
           {user.profilePicUrl ? (

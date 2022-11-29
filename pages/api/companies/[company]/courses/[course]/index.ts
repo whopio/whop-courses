@@ -70,6 +70,41 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
     };
   })
   .zpost(EditCourseSchema, async (data, ctx) => {
+    // Validate Changes
+    const prevCourse = await db.course.findUniqueOrThrow({
+      where: {
+        id: ctx.courseId,
+      },
+      include: {
+        chapters: {
+          include: {
+            lessons: true,
+          },
+        },
+      },
+    });
+
+    // Make sure that a course has at least 1 lesson before publishing
+    const prevLessons = prevCourse.chapters.flatMap((c) => c.lessons);
+    if (
+      prevLessons.length === 0 &&
+      prevCourse.status === "DRAFT" &&
+      data.visibility === "PUBLISHED"
+    ) {
+      throw new Error("Cannot publish a course with no lessons");
+    }
+
+    // Make sure that all lessons within a published course cannot be deleted
+    if (
+      data.structure &&
+      data.structure.flatMap((c) => c.lessons).length === 0 &&
+      prevCourse.status === "PUBLISHED" &&
+      (data.visibility === "PUBLISHED" || data.visibility === undefined)
+    ) {
+      throw new Error("Cannot publish a course with no lessons");
+    }
+
+    // Update fields
     const course = await db.course.update({
       where: {
         id: ctx.courseId,
@@ -82,6 +117,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
       },
     });
 
+    // Update Course Structure.
     const { structure } = data;
     if (structure) {
       const chapters = await db.chapter.findMany({
@@ -110,6 +146,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
       const chaptersToDelete = chapters.filter((c) => !chapterIds.has(c.id));
       const lessonsToDelete = lessons.filter((l) => !lessonIds.has(l.id));
 
+      // Delete videos for all lessons that we delete
       for (const lesson of lessonsToDelete) {
         if (lesson.mainVideo && lesson.mainVideo.assetId) {
           await MuxAPI.Video.Assets.del(lesson.mainVideo.assetId);

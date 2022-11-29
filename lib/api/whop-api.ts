@@ -75,6 +75,7 @@ export async function getAuthorizedUsers(accessToken: string) {
 }
 
 export async function isUserAdmin(accessToken: string, companyId: string) {
+  // TODO use sharkeys better endpoint
   const companies = await getAuthorizedUsers(accessToken);
   console.log(companies);
   const perms = companies.find((c) => c.company.id === companyId);
