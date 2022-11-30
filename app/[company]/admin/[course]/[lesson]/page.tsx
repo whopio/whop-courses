@@ -7,6 +7,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { LessonEditPage } from "./LessonEditPage";
 
 export default async function LessonIndexPage({ params }: PageProps) {
+  console.time("admin.lesson.page");
   const courseId = params?.course;
   const companyId = params?.company;
   const lessonId = params?.lesson;
@@ -18,6 +19,7 @@ export default async function LessonIndexPage({ params }: PageProps) {
     .find((lesson) => lesson.id === lessonId);
 
   if (!lesson) throw Error("404 - Lesson not found");
+  console.timeEnd("admin.lesson.page");
 
   return (
     <div className="p-8 flex flex-col gap-6 h-screen">

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { CreateCourseButton } from "./CreateCourseButton";
 
 export default async function AdminHome({ params, searchParams }: PageProps) {
+  console.time("admin.page");
   const company = await getCompany(params!.company);
   const filter =
     searchParams?.filter === "published"
@@ -30,6 +31,7 @@ export default async function AdminHome({ params, searchParams }: PageProps) {
       },
     },
   });
+  console.timeEnd("admin.page");
 
   return (
     <div className="flex flex-col gap-4 p-4 m-auto max-w-6xl pt-6">

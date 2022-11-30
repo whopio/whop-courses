@@ -2,6 +2,7 @@ import { cache } from "react";
 import { db } from "../db";
 
 export const getCourse = cache(async (courseId: string, userId: string) => {
+  console.time(`getCourse(${courseId}, ${userId})`);
   const course = await db.course.findUnique({
     where: {
       id: courseId,
@@ -31,6 +32,7 @@ export const getCourse = cache(async (courseId: string, userId: string) => {
   });
 
   if (!course) throw Error("404 - Failed to find course. ");
+  console.timeEnd(`getCourse(${courseId}, ${userId})`);
   return course;
 });
 

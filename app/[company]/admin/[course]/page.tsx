@@ -7,11 +7,13 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { CourseEditPage } from "./CourseEditPage";
 
 export default async function AdminCourseIndexPage({ params }: PageProps) {
+  console.time("admin.course.page");
   const courseId = params?.course;
   const companyId = params?.company;
   const company = await getCompany(companyId!);
   const user = await getUser();
   const course = await getCourse(courseId!, user.id);
+  console.timeEnd("admin.course.page");
   return (
     <div className="p-8 flex flex-col gap-6 h-screen">
       <div className="flex">

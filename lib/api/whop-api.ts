@@ -17,6 +17,8 @@ export type WhopApiOptions = {
 };
 
 export async function whopApi<T = any>(opts: WhopApiOptions) {
+  console.time(`[whop-api] ${opts.method || "GET"} ${opts.path}`);
+
   const headers: any = {};
   headers["Accept"] = "application/json";
   if (opts.whopCompany) headers["Whop-Company"] = opts.whopCompany;
@@ -35,6 +37,7 @@ export async function whopApi<T = any>(opts: WhopApiOptions) {
     );
   }
   const data = res.json() as T;
+  console.timeEnd(`[whop-api] ${opts.method || "GET"} ${opts.path}`);
   return data;
 }
 
