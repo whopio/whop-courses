@@ -21,6 +21,8 @@ const handler = API.withContext(
       order: numLessons,
       title: "",
       chapterId: data.chapterId,
+      files: "",
+      images: "",
     },
   });
   return lesson;

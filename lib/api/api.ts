@@ -256,14 +256,18 @@ export class API<
 
   async _call(req: NextApiRequest, res: NextApiResponse) {
     try {
+      console.time(`[api-context] ${req.method} ${req.url}`);
       const context = await this._contextBuilder(req, res);
+      console.timeEnd(`[api-context] ${req.method} ${req.url}`);
       const handler = this.getHandler(req.method);
       if (!handler) {
         res.status(405);
         throw new Error(`No handler for method ${req.method}`);
       }
 
+      console.time(`[api] ${req.method} ${req.url}`);
       const response = await handler(req, res, context);
+      console.timeEnd(`[api] ${req.method} ${req.url}`);
 
       if (res.headersSent) return;
       res.json({
