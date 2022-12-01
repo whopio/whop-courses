@@ -12,8 +12,8 @@ export type UserSession = z.infer<typeof UserSessionSchema>;
 export async function getSessionFromCookie(cookie?: RequestCookie) {
   if (!cookie) return null;
   try {
-    const user = await unsealData<UserSession>(cookie.value);
-    return user;
+    const user = await unsealData<any>(cookie.value);
+    return UserSessionSchema.parse(user);
   } catch (error) {
     return null;
   }

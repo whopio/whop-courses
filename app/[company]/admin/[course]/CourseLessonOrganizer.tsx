@@ -37,7 +37,15 @@ export const CourseLessonOrganizer: FC<{
   companyRoute: string;
   courseId: string;
   createLesson: (chapterId: string) => any;
-}> = ({ structure, setStructure, companyRoute, courseId, createLesson }) => {
+  loadingAddChapter: string | null;
+}> = ({
+  structure,
+  setStructure,
+  companyRoute,
+  courseId,
+  createLesson,
+  loadingAddChapter,
+}) => {
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     if (result.type === "CHAPTER") {
@@ -144,6 +152,11 @@ export const CourseLessonOrganizer: FC<{
                         size="sm"
                         iconLeft={faPlus}
                         onClick={() => createLesson(chapter.id)}
+                        disabled={
+                          !!loadingAddChapter &&
+                          loadingAddChapter !== chapter.id
+                        }
+                        loading={loadingAddChapter === chapter.id}
                       >
                         Add Lesson
                       </Button>

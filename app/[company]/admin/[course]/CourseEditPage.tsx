@@ -54,6 +54,7 @@ export const CourseEditPage: FC<{
   const [title, setTitle] = useState(course.title);
   const [description, setDescription] = useState(course.description);
   const [visibility, setVisibility] = useState(course.status);
+  const [loadingChapterId, setLoadingChapterId] = useState<string | null>(null);
 
   const saved =
     image === course.coverImage &&
@@ -105,12 +106,19 @@ export const CourseEditPage: FC<{
   }
 
   async function createLesson(chapterId: string) {
-    const lesson = await apiPost<APILessons>(
-      `/companies/${companyId}/courses/${courseId}/lessons`,
-      { chapterId }
-    );
-    router.refresh();
-    router.push(`/${companyRoute}/admin/${courseId}/${lesson.id}`);
+    try {
+      setLoadingChapterId(chapterId);
+      const lesson = await apiPost<APILessons>(
+        `/companies/${companyId}/courses/${courseId}/lessons`,
+        { chapterId }
+      );
+      setLoadingChapterId(null);
+      router.refresh();
+      router.push(`/${companyRoute}/admin/${courseId}/${lesson.id}`);
+    } catch (error) {
+      setLoadingChapterId(null);
+      alert((error as Error).message);
+    }
   }
 
   async function deleteCourse() {
@@ -196,6 +204,7 @@ export const CourseEditPage: FC<{
             companyRoute={companyRoute}
             courseId={courseId}
             createLesson={createLesson}
+            loadingAddChapter={loadingChapterId}
           />
           {onboardingStage === "details" && (
             <div className="bg-white absolute top-0 left-0 right-0 bottom-0 p-6 flex flex-col gap-4">
