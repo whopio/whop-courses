@@ -4,6 +4,7 @@ import { unsealData } from "./token";
 
 export const UserSessionSchema = z.object({
   userId: z.string(),
+  whopToken: z.string(),
 });
 
 export type UserSession = z.infer<typeof UserSessionSchema>;

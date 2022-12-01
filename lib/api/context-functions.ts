@@ -60,9 +60,9 @@ export const userContext = sessionContext.add(
   })
 );
 
-export const companyAdminUserContext = userContext.add(companyContext).add(
+export const companyAdminUserContext = sessionContext.add(companyContext).add(
   API.contextFunction(async (req, res, ctx) => {
-    const isAdmin = await isUserAdmin(ctx.user.whopAccessToken, ctx.company.id);
+    const isAdmin = await isUserAdmin(ctx.session.whopToken, ctx.company.id);
     if (!isAdmin) {
       res.status(403);
       throw Error("Not authorized");

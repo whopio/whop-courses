@@ -67,6 +67,7 @@ export default API.noContext().get(async (req, res) => {
 
   const session: UserSession = {
     userId: user.id,
+    whopToken: user.whopAccessToken,
   };
 
   const cookie = await createTokenCookie({
