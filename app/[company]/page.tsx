@@ -1,8 +1,11 @@
+import { isUserAdmin } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { formattedDurationEstimate } from "@/lib/duration-estimator";
 import { getCompany } from "@/lib/server/get-company";
 import { getUser } from "@/lib/server/get-user";
 import { blurDataURL, PageProps } from "@/lib/util";
+import { faSeedling } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
@@ -33,6 +36,7 @@ export default async function CompanyPage({ params }: PageProps) {
       },
     },
   });
+  const isAdmin = await isUserAdmin(user.whopAccessToken, company.tag);
 
   const isStarted = (course: typeof courses[number]) =>
     course.chapters.some((chapter) =>
@@ -57,6 +61,9 @@ export default async function CompanyPage({ params }: PageProps) {
     .filter((c) => !isCompleted(c));
   const completedCourses = courses.filter(isCompleted);
   const notStartedCourses = courses.filter((c) => !isStarted(c));
+
+  const isEmpty = courses.length === 0;
+
   console.timeEnd("company.page");
 
   return (
@@ -126,6 +133,31 @@ export default async function CompanyPage({ params }: PageProps) {
             ))}
           </div>
         </>
+      )}
+      {isEmpty && (
+        <div className="flex flex-col gap-4 items-center rounded-xl bg-neutral-100 p-6">
+          <FontAwesomeIcon
+            icon={faSeedling}
+            size="3x"
+            className="text-neutral-400"
+          />
+          <h3 className="text-xl font-bold">No Courses here yet!</h3>
+          <p className="text-neutral-800 text-center">
+            You&apos;re early! This company has not published any courses yet.
+            Check back later!
+          </p>
+          {isAdmin && (
+            <p className="italic">
+              As an admin, you can create and manage courses{" "}
+              <Link
+                href={`/${company.route}/admin`}
+                className="text-primary-600 underline hover:font-bold hover:underline-offset-2"
+              >
+                here
+              </Link>
+            </p>
+          )}
+        </div>
       )}
     </div>
   );
