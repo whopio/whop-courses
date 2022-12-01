@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { CompanySwitcherModal } from "./CompanySwitcherModal";
 import { CourseSidebarButton } from "./CourseSidebarButton";
+import { Sidepanel } from "./SidePanel";
 
 export default async function CompanyLayout({ children, params }: LayoutProps) {
   console.time("company.layout");
@@ -33,7 +34,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
 
   return (
     <div className="flex h-screen flex-nowrap items-stretch justify-start">
-      <nav className="bg-neutral-900 flex flex-col gap-8 p-4 items-stretch w-80 shrink-0 overflow-auto">
+      <Sidepanel>
         <CompanySwitcherModal
           companies={companies}
           selectedRoute={params!.company}
@@ -104,7 +105,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
         >
           Back to Whop
         </Button>
-      </nav>
+      </Sidepanel>
       <div className="flex-1 overflow-auto">{children}</div>
     </div>
   );
