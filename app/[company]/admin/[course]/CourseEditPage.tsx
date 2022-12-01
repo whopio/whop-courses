@@ -6,10 +6,13 @@ import type { TGetCourse } from "@/lib/server/get-course";
 import { Button } from "@/ui/Button";
 import {
   faArrowUpRightFromSquare,
+  faHandPointLeft,
+  faHandPointRight,
   faPlus,
   faSave,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { FC, useCallback, useState } from "react";
 import { APICourse } from "../../../../pages/api/companies/[company]/courses/[course]";
@@ -39,6 +42,10 @@ export const CourseEditPage: FC<{
       })),
     }))
   );
+
+  const [onboardingStage, setOnboardingStage] = useState<
+    null | "details" | "content"
+  >(isNewCourse(course) ? "details" : null);
 
   const [loading, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
@@ -123,7 +130,7 @@ export const CourseEditPage: FC<{
   return (
     <>
       <div className="flex items-stretch flex-1 overflow-hidden">
-        <div className="flex-1 border-r-2 border-neutral-200 overflow-auto shrink-0 flex flex-col pr-4 gap-4">
+        <div className="relative flex-1 border-r-2 border-neutral-200 overflow-auto shrink-0 flex flex-col pr-4 gap-4">
           <h1 className="font-bold text-2xl">Course Details</h1>
           <p className="text-neutral-700">
             This information will be displayed to users who view this course.
@@ -139,8 +146,32 @@ export const CourseEditPage: FC<{
             visibility={visibility}
             setVisibility={setVisibility}
           />
+          {onboardingStage === "content" && (
+            <div className="bg-white absolute top-0 left-0 right-0 bottom-0 p-6 flex flex-col gap-4 items-end">
+              <div>
+                <FontAwesomeIcon
+                  icon={faHandPointRight}
+                  size="3x"
+                  className="text-neutral-400"
+                />
+              </div>
+              <h3 className="text-xl font-bold">Step 2 - Course Content</h3>
+              <p className="text-right">
+                We’ve prepared a few chapters filled with lessons for you to
+                start off with. Feel free to edit these to suit your needs.
+              </p>
+              <Button
+                color="accent"
+                variant={"filled"}
+                extraClasses="self-end"
+                onClick={() => setOnboardingStage(null)}
+              >
+                Done
+              </Button>
+            </div>
+          )}
         </div>
-        <div className="flex-1 overflow-auto shrink-0 pl-4 gap-4 flex flex-col">
+        <div className="relative flex-1 overflow-auto shrink-0 pl-4 gap-4 flex flex-col">
           <div className="flex items-center">
             <div className="flex-1">
               <h3 className="font-bold text-2xl">Course Content</h3>
@@ -166,6 +197,26 @@ export const CourseEditPage: FC<{
             courseId={courseId}
             createLesson={createLesson}
           />
+          {onboardingStage === "details" && (
+            <div className="bg-white absolute top-0 left-0 right-0 bottom-0 p-6 flex flex-col gap-4">
+              <div>
+                <FontAwesomeIcon
+                  icon={faHandPointLeft}
+                  size="3x"
+                  className="text-neutral-400"
+                />
+              </div>
+              <h3 className="text-xl font-bold">Step 1 - Course Details</h3>
+              <p>Begin by filling out the general details for your course.</p>
+              <Button
+                color="accent"
+                variant={"filled"}
+                onClick={() => setOnboardingStage("content")}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">
@@ -213,4 +264,8 @@ function structureSaved(
     }
   }
   return true;
+}
+
+function isNewCourse(course: TGetCourse): boolean {
+  return course.title === "";
 }
