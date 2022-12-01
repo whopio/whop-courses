@@ -1,8 +1,6 @@
-import { Button } from "@/ui/Button";
-
-export default function CompanyLoading() {
+export default function CourseLoading() {
   return (
-    <div className="p-8 flex flex-col gap-6 m-auto max-w-6xl h-screen">
+    <div className="p-8 flex flex-col gap-6 m-auto max-w-6xl flex-1">
       <div className="flex-1 flex flex-col gap-6">
         <div className="rounded-lg w-full h-80 bg-neutral-200 animate-pulse" />
         <div className="flex gap-2 items-center justify-between">
@@ -36,9 +34,9 @@ export default function CompanyLoading() {
         <div className="flex-1 flex justify-end">
           <div className="h-5 w-48 rounded-lg animate-pulse bg-neutral-200"></div>
         </div>
-        <Button variant="filled" color="accent">
+        {/* <Button variant="filled" color="accent">
           Begin Course
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

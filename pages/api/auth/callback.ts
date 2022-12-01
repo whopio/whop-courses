@@ -78,5 +78,11 @@ export default API.noContext().get(async (req, res) => {
 
   res.setHeader("Set-Cookie", cookie);
 
-  res.redirect(typeof state === "string" ? decodeURIComponent(state) : "/");
+  const redirect =
+    typeof state === "string" ? prefix(decodeURIComponent(state), "/") : "/";
+
+  res.redirect(redirect);
 });
+
+const prefix = (s: string, prefix: string) =>
+  s.startsWith(prefix) ? s : prefix + s;

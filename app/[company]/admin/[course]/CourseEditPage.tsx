@@ -59,11 +59,12 @@ export const CourseEditPage: FC<{
     setLoading(true);
     try {
       await apiPost<APICourse>(`/companies/${companyId}/courses/${courseId}`, {
-        description,
-        image,
-        title,
-        structure,
-        visibility,
+        description:
+          course.description === description ? undefined : description,
+        image: course.coverImage === image ? undefined : image,
+        title: course.title === title ? undefined : title,
+        structure: structureSaved(course, structure) ? undefined : structure,
+        visibility: course.status === visibility ? undefined : visibility,
       });
       router.refresh();
     } catch (error) {
@@ -80,6 +81,7 @@ export const CourseEditPage: FC<{
     companyId,
     courseId,
     visibility,
+    course,
   ]);
 
   useSave(save);
