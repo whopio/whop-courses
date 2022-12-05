@@ -1,5 +1,5 @@
 import { getUserCompanies } from "@/lib/api/whop-api";
-import { getUser } from "@/lib/server/get-user";
+import { getUserSession } from "@/lib/server/get-user";
 import { blurDataURL } from "@/lib/util";
 import { faArrowCircleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,8 +8,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const user = await getUser();
-  const companies = await getUserCompanies(user.whopAccessToken);
+  const user = await getUserSession();
+  const companies = await getUserCompanies(user.whopToken);
 
   if (companies.length === 1) {
     return redirect(`/${companies[0].route}`);

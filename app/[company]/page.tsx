@@ -2,7 +2,7 @@ import { isUserAdmin } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { formattedDurationEstimate } from "@/lib/duration-estimator";
 import { getCompany } from "@/lib/server/get-company";
-import { getUser } from "@/lib/server/get-user";
+import { getUserSession } from "@/lib/server/get-user";
 import { blurDataURL, PageProps } from "@/lib/util";
 import { faSeedling } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +13,7 @@ import { FC } from "react";
 export default async function CompanyPage({ params }: PageProps) {
   console.time("company.page");
   const company = await getCompany(params!.company);
-  const user = await getUser();
+  const user = await getUserSession();
   const courses = await db.course.findMany({
     where: {
       companyId: company.tag,
@@ -26,7 +26,7 @@ export default async function CompanyPage({ params }: PageProps) {
             include: {
               userInteractions: {
                 where: {
-                  userId: user.id,
+                  userId: user.userId,
                 },
               },
               mainVideo: true,
@@ -36,7 +36,7 @@ export default async function CompanyPage({ params }: PageProps) {
       },
     },
   });
-  const isAdmin = await isUserAdmin(user.whopAccessToken, company.tag);
+  const isAdmin = await isUserAdmin(user.whopToken, company.tag);
 
   const isStarted = (course: typeof courses[number]) =>
     course.chapters.some((chapter) =>

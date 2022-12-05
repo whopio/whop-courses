@@ -13,6 +13,7 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import { useRouter } from "next/navigation";
 import { FC, useCallback, useState } from "react";
 import { APICourse } from "../../../../pages/api/companies/[company]/courses/[course]";
@@ -23,6 +24,19 @@ import {
   CourseLessonOrganizer,
   CourseStructure,
 } from "./CourseLessonOrganizer";
+
+function editorStateToString(editorState: EditorState): string {
+  return JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+}
+function stringToEditorState(str?: string | null | undefined): EditorState {
+  if (!str || str.length === 0) return EditorState.createEmpty();
+  try {
+    const obj = JSON.parse(str);
+    return EditorState.createWithContent(convertFromRaw(obj));
+  } catch (error) {
+    return EditorState.createEmpty();
+  }
+}
 
 export const CourseEditPage: FC<{
   companyId: string;
@@ -52,14 +66,21 @@ export const CourseEditPage: FC<{
   const [loadingNewChapter, setLoadingNewChapter] = useState(false);
   const [image, setImage] = useState<string | null>(course.coverImage);
   const [title, setTitle] = useState(course.title);
-  const [description, setDescription] = useState(course.description);
+  console.log(course);
+  const [description, setDescription] = useState(() =>
+    stringToEditorState(course.description)
+  );
   const [visibility, setVisibility] = useState(course.status);
   const [loadingChapterId, setLoadingChapterId] = useState<string | null>(null);
+
+  const descriptionTxt = editorStateToString(description);
+
+  console.log(descriptionTxt);
 
   const saved =
     image === course.coverImage &&
     title === course.title &&
-    description === course.description &&
+    descriptionTxt === course.description &&
     visibility === course.status &&
     structureSaved(course, structure);
 
@@ -68,7 +89,7 @@ export const CourseEditPage: FC<{
     try {
       await apiPost<APICourse>(`/companies/${companyId}/courses/${courseId}`, {
         description:
-          course.description === description ? undefined : description,
+          course.description === descriptionTxt ? undefined : descriptionTxt,
         image: course.coverImage === image ? undefined : image,
         title: course.title === title ? undefined : title,
         structure: structureSaved(course, structure) ? undefined : structure,
@@ -83,7 +104,7 @@ export const CourseEditPage: FC<{
   }, [
     title,
     image,
-    description,
+    descriptionTxt,
     structure,
     router,
     companyId,

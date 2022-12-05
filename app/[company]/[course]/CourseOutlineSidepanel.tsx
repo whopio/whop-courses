@@ -11,7 +11,7 @@ export const CourseOutlineSidepanel: FC<{ children: ReactNode }> = ({
   return (
     <>
       <div
-        className={`absolute top-0 flex flex-col items-stretch gap-6 p-2 w-96 transition-all overflow-auto h-full bg-slate-100 ${
+        className={`z-20 absolute top-0 flex flex-col items-stretch gap-6 p-2 w-96 transition-all overflow-auto h-full bg-slate-100 ${
           open ? "left-0" : "-left-full"
         }`}
       >

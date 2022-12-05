@@ -5,7 +5,7 @@ import {
 } from "@/lib/duration-estimator";
 import { getCompany } from "@/lib/server/get-company";
 import { getCourse } from "@/lib/server/get-course";
-import { getUser } from "@/lib/server/get-user";
+import { getUserSession } from "@/lib/server/get-user";
 import { PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
 import {
@@ -22,9 +22,9 @@ import { VideoPlayer } from "./VideoPlayer";
 export default async function LessonPage({ params }: PageProps) {
   console.time("lesson.page");
   const lessonId = params!.lesson!;
-  const user = await getUser();
+  const user = await getUserSession();
   const company = await getCompany(params!.company!);
-  const course = await getCourse(params!.course, user.id);
+  const course = await getCourse(params!.course, user.userId);
 
   let lesson, chapter, prevLesson, nextLesson;
   for (let i = 0; i < course.chapters.length; i++) {
@@ -48,7 +48,7 @@ export default async function LessonPage({ params }: PageProps) {
   const completedChapterDuration = chapter.lessons.reduce(
     (duration, l) =>
       l.userInteractions.find(
-        (i) => i.status === "COMPLETED" && i.userId === user.id
+        (i) => i.status === "COMPLETED" && i.userId === user.userId
       )
         ? estimateLessonDuration(l) + duration
         : duration,
@@ -59,7 +59,9 @@ export default async function LessonPage({ params }: PageProps) {
     (completedChapterDuration / chapterDuration) * 100
   );
 
-  const interaction = lesson.userInteractions.find((i) => i.userId === user.id);
+  const interaction = lesson.userInteractions.find(
+    (i) => i.userId === user.userId
+  );
 
   const [w, h] = lesson.mainVideo?.aspectRatio
     ?.split(":")

@@ -4,7 +4,7 @@ import {
   formattedDurationEstimate,
 } from "@/lib/duration-estimator";
 import { getCourse } from "@/lib/server/get-course";
-import { getUser } from "@/lib/server/get-user";
+import { getUserSession } from "@/lib/server/get-user";
 import { LayoutProps } from "@/lib/util";
 import Link from "next/link";
 import { CourseOutlineSidepanel } from "./CourseOutlineSidepanel";
@@ -14,14 +14,14 @@ export default async function Layout({ children, params }: LayoutProps) {
   console.time("course.layout");
   const courseId = params!.course;
   const companyId = params!.company;
-  const user = await getUser();
-  const course = await getCourse(courseId!, user.id);
+  const user = await getUserSession();
+  const course = await getCourse(courseId!, user.userId);
 
   const completedLessons = course.chapters
     .flatMap((c) => c.lessons)
     .filter((l) =>
       l.userInteractions.find(
-        (i) => i.status === "COMPLETED" && i.userId === user.id
+        (i) => i.status === "COMPLETED" && i.userId === user.userId
       )
     );
   const completedDuration = completedLessons.reduce(
