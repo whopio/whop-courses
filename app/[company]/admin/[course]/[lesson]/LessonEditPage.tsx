@@ -4,13 +4,16 @@ import { apiPost } from "@/lib/api/api-request";
 import { useSave } from "@/lib/hooks/use-save";
 import type { TGetCourse } from "@/lib/server/get-course";
 import { Button } from "@/ui/Button";
-import { TextArea, TextInput } from "@/ui/TextInput";
+import { RichtextRenderer } from "@/ui/RenderRichtext";
+import RichtextEditor from "@/ui/RichtextEditor";
+import { TextInput } from "@/ui/TextInput";
 import { getVideoPromise, usePromise, VideoDropzone } from "@/ui/VideoDropzone";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import { FC, useCallback, useState } from "react";
 import { APILesson } from "../../../../../pages/api/companies/[company]/courses/[course]/lessons/[lesson]";
 import { VideoPlayer } from "../../../[course]/[lesson]/VideoPlayer";
+import { editorStateToString, stringToEditorState } from "../CourseEditPage";
 
 export const LessonEditPage: FC<{
   companyId: string;
@@ -23,13 +26,16 @@ export const LessonEditPage: FC<{
   const [loading, setLoading] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(lesson.mainVideoId);
   const [title, setTitle] = useState(lesson.title);
-  const [description, setDescription] = useState(lesson.description || "");
-
+  const [description, setDescription] = useState(() =>
+    stringToEditorState(lesson.description)
+  );
   const [videoData] = usePromise(getVideoPromise(companyId, videoId));
+
+  const descriptionTxt = editorStateToString(description);
 
   const saved =
     title === lesson.title &&
-    description === lesson.description &&
+    descriptionTxt === lesson.description &&
     videoId === lesson.mainVideoId;
 
   const save = useCallback(async () => {
@@ -37,7 +43,7 @@ export const LessonEditPage: FC<{
     setLoading(true);
     await apiPost<APILesson>(
       `/companies/${companyId}/courses/${courseId}/lessons/${lessonId}`,
-      { description, title, videoId }
+      { description: descriptionTxt, title, videoId }
     );
     router.refresh();
     setLoading(false);
@@ -47,7 +53,7 @@ export const LessonEditPage: FC<{
     companyId,
     courseId,
     lessonId,
-    description,
+    descriptionTxt,
     title,
     videoId,
   ]);
@@ -80,16 +86,18 @@ export const LessonEditPage: FC<{
             onChange={(e) => setTitle(e.target.value)}
             className="text-lg"
           />
-          <TextArea
+          <RichtextEditor
             label="Lesson Description"
             placeholder="Type out your lesson here..."
-            rows={8}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            autogrow
+            onChange={setDescription}
           />
         </div>
-        <div className="flex-1 overflow-auto shrink-0 pl-4 gap-4 flex flex-col">
+        <div className="flex-1 overflow-auto shrink-0 pl-4 gap-4 flex flex-col rounded-xl border-2 border-accent-500 ml-4 py-4">
+          <h3 className="font-bold text-xl">Preview</h3>
+          <p className="text-neutral-700">
+            This is how users will see your lesson.
+          </p>
           <div
             className="rounded-lg w-full overflow-hidden shrink-0"
             style={{ aspectRatio }}
@@ -112,11 +120,7 @@ export const LessonEditPage: FC<{
               <span className="text-neutral-400">Enter lesson title</span>
             )}
           </h1>
-          <p className="whitespace-pre-line">
-            {description || (
-              <span className="text-neutral-400">Type out your lesson...</span>
-            )}
-          </p>
+          <RichtextRenderer content={descriptionTxt} />
         </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">

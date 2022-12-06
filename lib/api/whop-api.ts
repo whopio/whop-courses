@@ -74,6 +74,7 @@ export async function getAuthorizedUsers(accessToken: string) {
     path: "/v2/me/authorized_users",
     accessToken,
   });
+  console.log(`getAuthorizedUsers(${accessToken}) ==>`, res.data);
   return res.data as WhopAuthorizedUserResponse;
 }
 

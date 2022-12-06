@@ -13,12 +13,12 @@ datasource db {
 
 model User {
   id                 String                  @id
-  whopAccessToken    String
-  whopRefreshToken   String
+  whopAccessToken    String                  @db.VarChar(512)
+  whopRefreshToken   String                  @db.VarChar(512)
   whopTokenExpiry    DateTime
-  username           String
-  email              String?                 @unique
-  profilePicUrl      String?
+  username           String                  @db.VarChar(512)
+  email              String?                 @unique @db.VarChar(512)
+  profilePicUrl      String?                 @db.VarChar(1024)
   lessonInteractions UserLessonInteraction[]
 }
 
@@ -29,8 +29,8 @@ model Company {
 
 model Course {
   id          String       @id @default(uuid())
-  title       String
-  description String
+  title       String       @db.VarChar(512)
+  description String       @db.Text
   coverImage  String?
   company     Company      @relation(fields: [companyId], references: [id])
   companyId   String
@@ -52,8 +52,8 @@ enum ChapterStatus {
 
 model Chapter {
   id          String        @id @default(uuid())
-  title       String
-  description String
+  title       String        @db.VarChar(512)
+  description String        @db.Text
   status      ChapterStatus
   course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   courseId    String
@@ -65,13 +65,12 @@ model Chapter {
 
 model Lesson {
   id               String                  @id @default(uuid())
-  title            String
-  description      String?
-  richContent      String?
+  title            String                  @db.VarChar(512)
+  description      String?                 @db.Text
   mainVideoId      String?
   mainVideo        MuxVideo?               @relation(fields: [mainVideoId], references: [id])
-  images           String
-  files            String
+  images           String                  @db.Text
+  files            String                  @db.Text
   chapter          Chapter                 @relation(fields: [chapterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   chapterId        String
   userInteractions UserLessonInteraction[]

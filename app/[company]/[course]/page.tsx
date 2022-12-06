@@ -7,6 +7,7 @@ import { getCourse } from "@/lib/server/get-course";
 import { getUserSession } from "@/lib/server/get-user";
 import { blurDataURL, PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
+import { RichtextRenderer } from "@/ui/RenderRichtext";
 import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -69,8 +70,8 @@ export default async function CourseIndexPage({ params }: PageProps) {
             </span>
           </div>
         </div>
-        <div className="text-neutral-800 flex-1 whitespace-pre-line">
-          {course.description}
+        <div className="text-neutral-800 flex-1">
+          <RichtextRenderer content={course.description} />
         </div>
       </div>
       <div className="bg-neutral-100 rounded-lg p-4 flex gap-3 items-center shadow-lg">

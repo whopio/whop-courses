@@ -13,11 +13,11 @@ export default function FullScreenLoadingSpinner() {
             cx="50"
             cy="50"
             r="32"
-            stroke-width="11"
+            strokeWidth="11"
             stroke="#cbd5e1"
-            stroke-dasharray="50.26548245743669 50.26548245743669"
+            strokeDasharray="50.26548245743669 50.26548245743669"
             fill="none"
-            stroke-linecap="round"
+            strokeLinecap="round"
           >
             <animateTransform
               attributeName="transform"

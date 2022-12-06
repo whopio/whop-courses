@@ -25,10 +25,12 @@ import {
   CourseStructure,
 } from "./CourseLessonOrganizer";
 
-function editorStateToString(editorState: EditorState): string {
+export function editorStateToString(editorState: EditorState): string {
   return JSON.stringify(convertToRaw(editorState.getCurrentContent()));
 }
-function stringToEditorState(str?: string | null | undefined): EditorState {
+export function stringToEditorState(
+  str?: string | null | undefined
+): EditorState {
   if (!str || str.length === 0) return EditorState.createEmpty();
   try {
     const obj = JSON.parse(str);
@@ -66,7 +68,7 @@ export const CourseEditPage: FC<{
   const [loadingNewChapter, setLoadingNewChapter] = useState(false);
   const [image, setImage] = useState<string | null>(course.coverImage);
   const [title, setTitle] = useState(course.title);
-  console.log(course);
+
   const [description, setDescription] = useState(() =>
     stringToEditorState(course.description)
   );
@@ -74,8 +76,6 @@ export const CourseEditPage: FC<{
   const [loadingChapterId, setLoadingChapterId] = useState<string | null>(null);
 
   const descriptionTxt = editorStateToString(description);
-
-  console.log(descriptionTxt);
 
   const saved =
     image === course.coverImage &&

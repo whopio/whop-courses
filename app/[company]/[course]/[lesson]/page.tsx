@@ -8,6 +8,7 @@ import { getCourse } from "@/lib/server/get-course";
 import { getUserSession } from "@/lib/server/get-user";
 import { PageProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
+import { RichtextRenderer } from "@/ui/RenderRichtext";
 import {
   faArrowCircleLeft,
   faArrowCircleRight,
@@ -96,7 +97,7 @@ export default async function LessonPage({ params }: PageProps) {
           </div>
         </div>
         <div className="text-neutral-900 flex-1 flex flex-col gap-3">
-          <p className=" whitespace-pre-line">{lesson.description}</p>
+          <RichtextRenderer content={lesson.description} />
         </div>
         <div className="flex justify-end gap-2 p-2">
           <CompletionButton
