@@ -36,7 +36,7 @@ export type WhopCompanyByRouteResponse = {
 export type WhopAuthorizedUserResponse = {
   role: string;
   permission_level: number;
-  company: WhopCompanyResponse;
+  company: string;
 }[];
 
 export type WhopUserMembershipResponse = {

@@ -66,6 +66,7 @@ export async function getUserCompanies(accessToken: string) {
     path: "/v2/me/companies",
     accessToken,
   });
+  console.log(res);
   return res.data as WhopUserCompanies;
 }
 
@@ -74,14 +75,18 @@ export async function getAuthorizedUsers(accessToken: string) {
     path: "/v2/me/authorized_users",
     accessToken,
   });
-  console.log(`getAuthorizedUsers(${accessToken}) ==>`, res.data);
+  console.log(`getAuthorizedUsers(${accessToken}) ==>`, res);
   return res.data as WhopAuthorizedUserResponse;
 }
 
 export async function isUserAdmin(accessToken: string, companyId: string) {
   // TODO use sharkeys better endpoint
   const companies = await getAuthorizedUsers(accessToken);
-  const perms = companies.find((c) => c.company.id === companyId);
+  const perms = companies.find((c) => c.company === companyId);
+  console.log(
+    `Is User Admin? (cid: ${companyId}, accessToken: ${accessToken}) =>`,
+    perms
+  );
   const isCompanyAdmin = perms && perms.permission_level <= 1;
   return !!isCompanyAdmin;
 }
