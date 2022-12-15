@@ -98,3 +98,11 @@ export async function getUserMemberships(accessToken: string) {
   });
   return res.data as WhopUserMembershipResponse;
 }
+
+export async function hasAccess(accessToken: string, resource: string) {
+  const res = await whopApi<{ valid: boolean }>({
+    path: `/v2/me/has_access/${resource}`,
+    accessToken,
+  });
+  return res.valid;
+}

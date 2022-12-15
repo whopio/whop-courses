@@ -1,4 +1,4 @@
-import { getUserCompanies, isUserAdmin } from "@/lib/api/whop-api";
+import { getUserCompanies, hasAccess, isUserAdmin } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
 import { getUser } from "@/lib/server/get-user";
@@ -21,7 +21,7 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
   // Todo, figure out if the current user has access to these courses
   const user = await getUser();
   const companies = await getUserCompanies(user.whopAccessToken);
-  const isAllowed = companies.some((c) => c.id === company.tag);
+  const isAllowed = await hasAccess(user.whopAccessToken, company.tag);
   if (!isAllowed) throw Error("You do not have permission to be on this page.");
   const courses = await db.course.findMany({
     where: {
