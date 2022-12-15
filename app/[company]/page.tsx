@@ -72,7 +72,11 @@ export default async function CompanyPage({ params }: PageProps) {
         placeholder="blur"
         blurDataURL={blurDataURL}
         className="rounded-lg w-full max-h-80 object-cover"
-        src={company.header_image_url}
+        src={
+          company.header_image_url ||
+          company.image_url ||
+          "/images/placeholder.png"
+        }
         alt="Company Header Image"
         width={1280}
         height={384}
