@@ -37,7 +37,7 @@ export type WhopAuthorizedUserResponse = {
   role: string;
   permission_level: number;
   company: string;
-}[];
+};
 
 export type WhopUserMembershipResponse = {
   id: string;
@@ -84,4 +84,9 @@ export type WhopExperienceResponse = {
     | "courses"
     | "link"
     | "file";
+};
+
+export type PaginatedResponse<T> = {
+  pagination: { current_page: number; total_page: number; total_count: number };
+  data: T[];
 };

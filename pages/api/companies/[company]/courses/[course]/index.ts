@@ -66,7 +66,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
     }
 
     // Delete Experience on whop
-    await deleteExperience(ctx.company.id, course.experienceId);
+    await deleteExperience(ctx.company.id, course.experienceId, course.title);
 
     return {
       ...course,

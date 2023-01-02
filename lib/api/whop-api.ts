@@ -1,10 +1,10 @@
 import {
+  PaginatedResponse,
   WhopAuthorizedUserResponse,
   WhopCompanyByRouteResponse,
   WhopCompanyResponse,
   WhopExperienceResponse,
   WhopMeResponse,
-  WhopUserCompanies,
   WhopUserMembershipResponse,
 } from "./whop-api-types";
 
@@ -44,13 +44,44 @@ export async function whopApi<T = any>(opts: WhopApiOptions) {
     headers,
   });
   if (!res.ok) {
+    const body = await res.json().catch((e) => ({
+      message:
+        "[METAERROR] Could not get further details about whop-api error.",
+    }));
     throw Error(
-      `Whop API request failed with: ${res.status} - ${res.statusText}. Request path: '${opts.path}'`
+      `Whop API request failed with: ${res.status} - ${
+        res.statusText
+      }. Request path: '${opts.path}. Body: ${JSON.stringify(body, null, 2)}'`
     );
   }
   const data = res.json() as T;
   console.timeEnd(`[whop-api] ${opts.method || "GET"} ${opts.path}`);
   return data;
+}
+
+export async function whopApiPaginatedAll<T>(opts: WhopApiOptions) {
+  const basePath = opts.path.includes("?")
+    ? opts.path + "&per=20"
+    : opts.path + "?per=20";
+  const res = await whopApi<PaginatedResponse<T>>({
+    ...opts,
+    path: basePath,
+  });
+  let extra: T[] = [];
+  if (res.pagination.current_page < res.pagination.total_page) {
+    const pages = await Promise.all(
+      Array(res.pagination.total_page - 1)
+        .fill(0)
+        .map((_, i) =>
+          whopApi<PaginatedResponse<T>>({
+            ...opts,
+            path: `${basePath}&page=${i + 2}`,
+          })
+        )
+    );
+    extra = pages.flatMap((p) => p.data);
+  }
+  return res.data.concat(extra);
 }
 
 export async function getMe(accessToken: string) {
@@ -74,21 +105,20 @@ export async function getCompanyByRoute(
 }
 
 export async function getUserCompanies(accessToken: string) {
-  const res = await whopApi({
+  const res = await whopApiPaginatedAll<WhopCompanyResponse>({
     path: "/v2/me/companies",
     accessToken,
   });
-  console.log(res);
-  return res.data as WhopUserCompanies;
+  return res;
 }
 
 export async function getAuthorizedUsers(accessToken: string) {
-  const res = await whopApi({
+  const res = await whopApiPaginatedAll<WhopAuthorizedUserResponse>({
     path: "/v2/me/authorized_users",
     accessToken,
   });
   console.log(`getAuthorizedUsers(${accessToken}) ==>`, res);
-  return res.data as WhopAuthorizedUserResponse;
+  return res;
 }
 
 export async function isUserAdmin(accessToken: string, companyId: string) {
@@ -160,10 +190,11 @@ export async function updateExperience(
 
 export async function deleteExperience(
   companyId: string,
-  experienceId: string
+  experienceId: string,
+  name: string
 ) {
   await whopApi({
-    path: "/v2/experiences/" + experienceId,
+    path: "/v2/experiences/" + experienceId + "?name=" + name,
     method: "DELETE",
     apiKey: true,
     whopCompany: companyId,
