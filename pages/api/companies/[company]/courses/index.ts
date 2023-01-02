@@ -1,5 +1,6 @@
 import { API, APIType } from "@/lib/api/api";
 import { companyAdminUserContext } from "@/lib/api/context-functions";
+import { createExperience } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 
 const introLessons: { title: string; description?: string }[][] = [
@@ -12,12 +13,18 @@ const introLessons: { title: string; description?: string }[][] = [
 
 const handler = API.withContext(companyAdminUserContext).post(
   async (req, res, ctx) => {
+    const experience = await createExperience(
+      ctx.company.id,
+      "New Course",
+      undefined
+    );
     const course = await db.course.create({
       data: {
         coverImage: null,
         description: "",
         title: "",
         companyId: ctx.company.id,
+        experienceId: experience.id,
         chapters: {
           createMany: {
             data: [

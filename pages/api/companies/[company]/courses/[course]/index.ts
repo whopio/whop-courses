@@ -3,6 +3,7 @@ import {
   companyAdminUserContext,
   courseContext,
 } from "@/lib/api/context-functions";
+import { deleteExperience, updateExperience } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { MuxAPI } from "@/lib/mux-api";
 import { notEmpty } from "@/lib/util";
@@ -64,6 +65,9 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
       await MuxAPI.Video.Assets.del(assetId);
     }
 
+    // Delete Experience on whop
+    await deleteExperience(ctx.company.id, course.experienceId);
+
     return {
       ...course,
       chapters: undefined,
@@ -83,6 +87,19 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
         },
       },
     });
+
+    // Update Experience on whop
+    let promises: Promise<any>[] = [];
+    if (data.title && prevCourse.title !== data.title) {
+      promises.push(
+        updateExperience(
+          ctx.company.id,
+          prevCourse.experienceId,
+          data.title,
+          undefined
+        )
+      );
+    }
 
     // Make sure that a course has at least 1 lesson before publishing
     const prevLessons = prevCourse.chapters.flatMap((c) => c.lessons);
@@ -201,6 +218,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
         }
       }
     }
+    await Promise.all(promises);
 
     return course;
   });

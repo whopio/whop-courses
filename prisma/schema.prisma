@@ -28,14 +28,15 @@ model Company {
 }
 
 model Course {
-  id          String       @id @default(uuid())
-  title       String       @db.VarChar(512)
-  description String       @db.Text
-  coverImage  String?
-  company     Company      @relation(fields: [companyId], references: [id])
-  companyId   String
-  chapters    Chapter[]
-  status      CourseStatus @default(DRAFT)
+  id           String       @id @default(uuid())
+  title        String       @db.VarChar(512)
+  description  String       @db.Text
+  coverImage   String?
+  company      Company      @relation(fields: [companyId], references: [id])
+  companyId    String
+  chapters     Chapter[]
+  status       CourseStatus @default(DRAFT)
+  experienceId String
 
   @@index([companyId])
 }

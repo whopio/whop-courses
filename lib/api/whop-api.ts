@@ -2,6 +2,7 @@ import {
   WhopAuthorizedUserResponse,
   WhopCompanyByRouteResponse,
   WhopCompanyResponse,
+  WhopExperienceResponse,
   WhopMeResponse,
   WhopUserCompanies,
   WhopUserMembershipResponse,
@@ -10,7 +11,7 @@ import {
 export type WhopApiOptions = {
   path: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  body?: object;
+  body?: object | URLSearchParams;
   accessToken?: string;
   apiKey?: boolean;
   whopCompany?: string;
@@ -26,8 +27,19 @@ export async function whopApi<T = any>(opts: WhopApiOptions) {
     headers["Authorization"] = `Bearer ${process.env.WHOP_API_KEY}`;
   if (opts.accessToken) headers["Authorization"] = `Bearer ${opts.accessToken}`;
 
+  let body = undefined;
+  if (opts.body) {
+    if (opts.body instanceof URLSearchParams) {
+      body = opts.body;
+      headers["Content-Type"] = "application/x-www-form-urlencoded";
+    } else {
+      body = JSON.stringify(opts.body);
+      headers["Content-Type"] = "application/json";
+    }
+  }
+
   const res = await fetch(`${process.env.WHOP_API_URL}${opts.path}`, {
-    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    body,
     method: opts.method || "GET",
     headers,
   });
@@ -105,4 +117,55 @@ export async function hasAccess(accessToken: string, resource: string) {
     accessToken,
   });
   return res.valid;
+}
+
+export async function createExperience(
+  companyId: string,
+  name: string,
+  description: string | undefined | null
+) {
+  const formData = new URLSearchParams();
+  formData.append("name", name);
+  if (description) formData.append("description", description);
+  const res = await whopApi<WhopExperienceResponse>({
+    path: "/v2/experiences",
+    method: "POST",
+    body: formData,
+    apiKey: true,
+    whopCompany: companyId,
+  });
+
+  return res;
+}
+
+export async function updateExperience(
+  companyId: string,
+  experienceId: string,
+  name: string,
+  description: string | undefined | null
+) {
+  const formData = new URLSearchParams();
+  formData.append("name", name);
+  if (description) formData.append("description", description);
+  const res = await whopApi<WhopExperienceResponse>({
+    path: "/v2/experiences/" + experienceId,
+    method: "POST",
+    body: formData,
+    apiKey: true,
+    whopCompany: companyId,
+  });
+
+  return res;
+}
+
+export async function deleteExperience(
+  companyId: string,
+  experienceId: string
+) {
+  await whopApi({
+    path: "/v2/experiences/" + experienceId,
+    method: "DELETE",
+    apiKey: true,
+    whopCompany: companyId,
+  });
 }

@@ -65,3 +65,23 @@ export type WhopUserMembershipResponse = {
 }[];
 
 export type WhopUserCompanies = WhopCompanyResponse[];
+
+export type WhopExperienceResponse = {
+  id: string;
+  name: string;
+  description: string;
+  properties: object;
+  experience_type:
+    | "discord"
+    | "software"
+    | "content"
+    | "custom"
+    | "proxy"
+    | "native_content"
+    | "app"
+    | "zentask"
+    | "coffeecard"
+    | "courses"
+    | "link"
+    | "file";
+};
