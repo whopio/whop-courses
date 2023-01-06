@@ -71,6 +71,7 @@ export type WhopExperienceResponse = {
   name: string;
   description: string;
   properties: object;
+  access_passes: string[];
   experience_type:
     | "discord"
     | "software"

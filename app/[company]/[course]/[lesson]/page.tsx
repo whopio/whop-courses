@@ -25,7 +25,12 @@ export default async function LessonPage({ params }: PageProps) {
   const lessonId = params!.lesson!;
   const user = await getUserSession();
   const company = await getCompany(params!.company!);
-  const course = await getCourse(params!.course, user.userId);
+  const course = await getCourse(
+    params!.course,
+    user.userId,
+    user.whopToken,
+    true
+  );
 
   let lesson, chapter, prevLesson, nextLesson;
   for (let i = 0; i < course.chapters.length; i++) {

@@ -12,7 +12,7 @@ export default async function AdminCourseIndexPage({ params }: PageProps) {
   const companyId = params?.company;
   const company = await getCompany(companyId!);
   const user = await getUserSession();
-  const course = await getCourse(courseId!, user.userId);
+  const course = await getCourse(courseId!, user.userId, user.whopToken, false);
   console.timeEnd("admin.course.page");
   return (
     <div className="p-8 flex flex-col gap-6 h-screen">

@@ -152,15 +152,22 @@ export async function hasAccess(accessToken: string, resource: string) {
 export async function createExperience(
   companyId: string,
   name: string,
-  description: string | undefined | null
+  description: string | undefined | null,
+  accessPasses?: string[] | undefined | null
 ) {
-  const formData = new URLSearchParams();
-  formData.append("name", name);
-  if (description) formData.append("description", description);
+  // const formData = new URLSearchParams();
+  // formData.append("name", name);
+  // if (accessPasses) {
+  //   formData.append("access_pass_ids", accessPasses.join(","));
+  // }
+  // if (description) formData.append("description", description);
   const res = await whopApi<WhopExperienceResponse>({
     path: "/v2/experiences",
     method: "POST",
-    body: formData,
+    body: {
+      name,
+      access_pass_ids: accessPasses,
+    },
     apiKey: true,
     whopCompany: companyId,
   });
@@ -185,6 +192,15 @@ export async function updateExperience(
     whopCompany: companyId,
   });
 
+  return res;
+}
+
+export async function getExperience(companyId: string, experienceId: string) {
+  const res = await whopApi<WhopExperienceResponse>({
+    path: "/v2/experiences/" + experienceId,
+    apiKey: true,
+    whopCompany: companyId,
+  });
   return res;
 }
 

@@ -3,7 +3,12 @@ import {
   companyAdminUserContext,
   courseContext,
 } from "@/lib/api/context-functions";
-import { deleteExperience, updateExperience } from "@/lib/api/whop-api";
+import {
+  createExperience,
+  deleteExperience,
+  getExperience,
+  updateExperience,
+} from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { MuxAPI } from "@/lib/mux-api";
 import { notEmpty } from "@/lib/util";
@@ -66,7 +71,9 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
     }
 
     // Delete Experience on whop
-    await deleteExperience(ctx.company.id, course.experienceId, course.title);
+    if (course.experienceId) {
+      await deleteExperience(ctx.company.id, course.experienceId, course.title);
+    }
 
     return {
       ...course,
@@ -90,14 +97,50 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
 
     // Update Experience on whop
     let promises: Promise<any>[] = [];
-    if (data.title && prevCourse.title !== data.title) {
+
+    if (data.visibility === "PUBLISHED" && prevCourse.status === "PUBLISHED") {
+      if (
+        data.title &&
+        prevCourse.title !== data.title &&
+        prevCourse.experienceId
+      ) {
+        promises.push(
+          updateExperience(
+            ctx.company.id,
+            prevCourse.experienceId,
+            data.title,
+            undefined
+          )
+        );
+      }
+    }
+
+    if (data.visibility === "DRAFT" && prevCourse.status === "PUBLISHED") {
+      // Delete Experience
+      // TODO: record the access passes that where attached to this course and re instantiate them when we re publish the course.
       promises.push(
-        updateExperience(
-          ctx.company.id,
-          prevCourse.experienceId,
-          data.title,
-          undefined
-        )
+        (async () => {
+          if (prevCourse.experienceId) {
+            const experience = await getExperience(
+              ctx.company.id,
+              prevCourse.experienceId
+            );
+            await db.course.update({
+              where: {
+                id: ctx.courseId,
+              },
+              data: {
+                experienceId: null,
+                accessPassIds: experience.access_passes.join(","),
+              },
+            });
+            await deleteExperience(
+              ctx.company.id,
+              prevCourse.experienceId,
+              prevCourse.title
+            );
+          }
+        })()
       );
     }
 
@@ -131,8 +174,34 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
         description: data.description,
         title: data.title,
         status: data.visibility,
+        experienceId:
+          data.visibility === "PUBLISHED" ? prevCourse.experienceId : null,
       },
     });
+
+    // Check if we updated a course from draft to published
+    if (prevCourse.status === "DRAFT" && course.status === "PUBLISHED") {
+      // Create Experience
+      promises.push(
+        (async () => {
+          const accessPassesToRestore = course.accessPassIds?.split(",") ?? [];
+          const experience = await createExperience(
+            ctx.company.id,
+            course.title,
+            "",
+            accessPassesToRestore
+          );
+          await db.course.update({
+            where: {
+              id: ctx.courseId,
+            },
+            data: {
+              experienceId: experience.id,
+            },
+          });
+        })()
+      );
+    }
 
     // Update Course Structure.
     const { structure } = data;

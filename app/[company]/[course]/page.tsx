@@ -17,7 +17,7 @@ export default async function CourseIndexPage({ params }: PageProps) {
   const courseId = params?.course;
   const companyId = params?.company;
   const user = await getUserSession();
-  const course = await getCourse(courseId!, user.userId);
+  const course = await getCourse(courseId!, user.userId, user.whopToken, true);
   const firstLesson = course.chapters[0].lessons[0];
   const uncompletedLessons = course.chapters
     .flatMap((c) => c.lessons)

@@ -1,6 +1,7 @@
 import { getUserCompanies, hasAccess, isUserAdmin } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { getCompany } from "@/lib/server/get-company";
+import { filterCoursesByAccess } from "@/lib/server/get-course";
 import { getUser } from "@/lib/server/get-user";
 import { blurDataURL, LayoutProps } from "@/lib/util";
 import { Button } from "@/ui/Button";
@@ -23,13 +24,18 @@ export default async function CompanyLayout({ children, params }: LayoutProps) {
   const companies = await getUserCompanies(user.whopAccessToken);
   const isAllowed = await hasAccess(user.whopAccessToken, company.tag);
   if (!isAllowed) throw Error("You do not have permission to be on this page.");
-  const courses = await db.course.findMany({
+  const isAdmin = await isUserAdmin(user.whopAccessToken, company.tag);
+  const allCourses = await db.course.findMany({
     where: {
       companyId: company.tag,
       status: "PUBLISHED",
     },
   });
-  const isAdmin = await isUserAdmin(user.whopAccessToken, company.tag);
+  const courses = await filterCoursesByAccess(
+    allCourses,
+    user.whopAccessToken,
+    isAdmin
+  );
   console.timeEnd("company.layout");
 
   return (

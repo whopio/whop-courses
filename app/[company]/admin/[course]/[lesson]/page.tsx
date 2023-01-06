@@ -13,7 +13,7 @@ export default async function LessonIndexPage({ params }: PageProps) {
   const lessonId = params?.lesson;
   const user = await getUserSession();
   const company = await getCompany(companyId!);
-  const course = await getCourse(courseId!, user.userId);
+  const course = await getCourse(courseId!, user.userId, user.whopToken, false);
   const lesson = course.chapters
     .flatMap((chapter) => chapter.lessons)
     .find((lesson) => lesson.id === lessonId);

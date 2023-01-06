@@ -15,7 +15,7 @@ export default async function Layout({ children, params }: LayoutProps) {
   const courseId = params!.course;
   const companyId = params!.company;
   const user = await getUserSession();
-  const course = await getCourse(courseId!, user.userId);
+  const course = await getCourse(courseId!, user.userId, user.whopToken, true);
 
   const completedLessons = course.chapters
     .flatMap((c) => c.lessons)

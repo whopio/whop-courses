@@ -2,6 +2,7 @@ import { isUserAdmin } from "@/lib/api/whop-api";
 import { db } from "@/lib/db";
 import { formattedDurationEstimate } from "@/lib/duration-estimator";
 import { getCompany } from "@/lib/server/get-company";
+import { filterCoursesByAccess } from "@/lib/server/get-course";
 import { getUserSession } from "@/lib/server/get-user";
 import { blurDataURL, PageProps } from "@/lib/util";
 import { faSeedling } from "@fortawesome/free-solid-svg-icons";
@@ -14,7 +15,8 @@ export default async function CompanyPage({ params }: PageProps) {
   console.time("company.page");
   const company = await getCompany(params!.company);
   const user = await getUserSession();
-  const courses = await db.course.findMany({
+  const isAdmin = await isUserAdmin(user.whopToken, company.tag);
+  const allCourses = await db.course.findMany({
     where: {
       companyId: company.tag,
       status: "PUBLISHED",
@@ -36,7 +38,12 @@ export default async function CompanyPage({ params }: PageProps) {
       },
     },
   });
-  const isAdmin = await isUserAdmin(user.whopToken, company.tag);
+
+  const courses = await filterCoursesByAccess(
+    allCourses,
+    user.whopToken,
+    isAdmin
+  );
 
   const isStarted = (course: typeof courses[number]) =>
     course.chapters.some((chapter) =>
