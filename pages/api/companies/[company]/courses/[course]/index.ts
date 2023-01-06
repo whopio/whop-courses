@@ -174,8 +174,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
         description: data.description,
         title: data.title,
         status: data.visibility,
-        experienceId:
-          data.visibility === "PUBLISHED" ? prevCourse.experienceId : null,
+        experienceId: data.visibility === "PUBLISHED" ? undefined : null,
       },
     });
 
@@ -197,6 +196,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
             },
             data: {
               experienceId: experience.id,
+              accessPassIds: null,
             },
           });
         })()

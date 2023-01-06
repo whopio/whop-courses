@@ -155,12 +155,6 @@ export async function createExperience(
   description: string | undefined | null,
   accessPasses?: string[] | undefined | null
 ) {
-  // const formData = new URLSearchParams();
-  // formData.append("name", name);
-  // if (accessPasses) {
-  //   formData.append("access_pass_ids", accessPasses.join(","));
-  // }
-  // if (description) formData.append("description", description);
   const res = await whopApi<WhopExperienceResponse>({
     path: "/v2/experiences",
     method: "POST",
@@ -181,13 +175,13 @@ export async function updateExperience(
   name: string,
   description: string | undefined | null
 ) {
-  const formData = new URLSearchParams();
-  formData.append("name", name);
-  if (description) formData.append("description", description);
   const res = await whopApi<WhopExperienceResponse>({
     path: "/v2/experiences/" + experienceId,
     method: "POST",
-    body: formData,
+    body: {
+      name,
+      description,
+    },
     apiKey: true,
     whopCompany: companyId,
   });
