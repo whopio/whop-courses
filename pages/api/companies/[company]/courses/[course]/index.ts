@@ -137,7 +137,7 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
             await deleteExperience(
               ctx.company.id,
               prevCourse.experienceId,
-              prevCourse.title
+              data.title ?? prevCourse.title
             );
           }
         })()
@@ -174,7 +174,6 @@ const handler = API.withContext(companyAdminUserContext.add(courseContext))
         description: data.description,
         title: data.title,
         status: data.visibility,
-        experienceId: data.visibility === "PUBLISHED" ? undefined : null,
       },
     });
 
